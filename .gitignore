@@ -23,8 +23,8 @@ Thumbs.db
 
 # Output files (generated files in jobs/ folders)
 output/
-*.html
-*.csv
+jobs/*/*.html
+jobs/*/*.csv
 
 # Local storage
 *.local
