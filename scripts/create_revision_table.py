@@ -374,7 +374,8 @@ def write_revision_table(translations, csv_path):
             'State',
             'Source', 
             'Target',
-            'New target',
+            'New target',  # Revisions from XLF (original)
+            'AI Revision',  # AI-powered revisions
             'Code',
             'Comment',
             'Translator',
@@ -389,7 +390,8 @@ def write_revision_table(translations, csv_path):
                 'State': trans.get('state', ''),
                 'Source': trans['source'],
                 'Target': trans['target'],
-                'New target': trans['new_target'],
+                'New target': trans['new_target'],  # Original XLF revisions
+                'AI Revision': '',  # Will be filled by AI revision script
                 'Code': trans['code'],
                 'Comment': trans['comment'],
                 'Translator': trans.get('translator', ''),

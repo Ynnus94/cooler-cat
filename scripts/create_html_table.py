@@ -971,9 +971,12 @@ def create_html_table(csv_path, html_path, job_id=None):
                             <th>State</th>
                             <th>Source</th>
                             <th>Target</th>
-                            <th>New target</th>
+                            <th>Revision</th>
+                            <th>AI Revision</th>
                             <th>Code</th>
+                            <th>Error Codes</th>
                             <th>Comment</th>
+                            <th>AI Comment</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1095,18 +1098,80 @@ def create_html_table(csv_path, html_path, job_id=None):
             new_target_display = '<em>No revision</em>'
             new_target_class = 'new-target-col'
         
+        # Get AI columns
+        ai_revision_raw = row.get('AI Revision', '')
+        error_codes = html.escape(row.get('Error Codes', ''))
+        ai_comment = html.escape(row.get('AI Comment', ''))
+        
+        # Format AI revision with copy button if exists
+        ai_revision_display = ''
+        if ai_revision_raw:
+            import base64
+            ai_revision_b64 = base64.b64encode(ai_revision_raw.encode('utf-8')).decode('utf-8')
+            
+            # Determine what to compare against for highlighting
+            # If there's a manual revision, compare AI against that; otherwise compare against original target
+            comparison_text = new_target_raw if new_target_raw else target_raw
+            
+            # Use JavaScript highlighting by passing both texts as data attributes
+            ai_revision_formatted = format_text_with_tags(ai_revision_raw)
+            comparison_b64 = base64.b64encode(comparison_text.encode('utf-8')).decode('utf-8')
+            
+            ai_revision_display = f'''<div class="has-ai-revision">
+                <div class="ai-revision-text" data-original-b64="{comparison_b64}" data-revised-b64="{ai_revision_b64}">{ai_revision_formatted}</div>
+                <div class="button-group">
+                    <button class="copy-button" data-text-b64="{ai_revision_b64}" onclick="copyToClipboard(this)" title="Copy AI revision">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                        Copy
+                    </button>
+                </div>
+            </div>'''
+        else:
+            ai_revision_display = '<em style="color: #94a3b8;">No AI revision</em>'
+        
+        # Format error codes with styling
+        error_codes_html = ''
+        if error_codes:
+            codes = [c.strip() for c in error_codes.split(',')]
+            code_spans = []
+            for c in codes:
+                css_class = f"code-{c.replace('.', '').replace('-', '')}"
+                code_spans.append(f'<span class="{css_class}">{c}</span>')
+            error_codes_html = ' '.join(code_spans)
+        
+        # Format AI comment with copy button if exists
+        ai_comment_display = ''
+        if ai_comment:
+            import base64
+            ai_comment_b64 = base64.b64encode(ai_comment.encode('utf-8')).decode('utf-8')
+            ai_comment_display = f'''<div class="comment-wrapper">
+                <div>{ai_comment}</div>
+                <button class="comment-copy-button" data-text-b64="{ai_comment_b64}" onclick="copyCommentToClipboard(this)" title="Copy AI comment">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                    Copy
+                </button>
+            </div>'''
+        
         # Set has_revision as lowercase string for JavaScript
         has_revision_str = 'true' if new_target_raw else 'false'
+        has_ai_revision_str = 'true' if ai_revision_raw else 'false'
         
         html_content += f"""
-                        <tr class="{row_class}" data-code="{code}" data-has-revision="{has_revision_str}" data-state="{state}">
-                            <td class="id-col">{matecat_id}{'<span class="revision-badge">REVISED</span>' if new_target_raw else ''}</td>
+                        <tr class="{row_class}" data-code="{code}" data-error-codes="{error_codes}" data-has-revision="{has_revision_str}" data-has-ai-revision="{has_ai_revision_str}" data-state="{state}">
+                            <td class="id-col">{matecat_id}{'<span class="revision-badge">REVISED</span>' if new_target_raw else ''}{'<span class="ai-badge">AI</span>' if ai_revision_raw else ''}</td>
                             <td class="state-col">{state_badge}</td>
                             <td class="source-col">{source}</td>
                             <td class="target-col">{target}</td>
                             <td class="{new_target_class}">{new_target_display}</td>
+                            <td class="ai-revision-col">{ai_revision_display}</td>
                             <td class="code-col">{code_html}</td>
+                            <td class="error-codes-col">{error_codes_html}</td>
                             <td class="comment-col">{comment_display}</td>
+                            <td class="ai-comment-col">{ai_comment_display}</td>
                         </tr>
 """
     
@@ -1420,6 +1485,43 @@ def create_html_table(csv_path, html_path, job_id=None):
                 e.preventDefault();
                 document.getElementById('searchBox').focus();
             }
+        });
+    </script>
+    
+    <script>
+        // Apply highlighting to AI revision cells
+        document.addEventListener('DOMContentLoaded', function() {
+            const aiRevisionCells = document.querySelectorAll('.ai-revision-text[data-original-b64][data-revised-b64]');
+            aiRevisionCells.forEach(cell => {
+                const originalB64 = cell.getAttribute('data-original-b64');
+                const revisedB64 = cell.getAttribute('data-revised-b64');
+                
+                if (originalB64 && revisedB64) {
+                    try {
+                        const original = atob(originalB64);
+                        const revised = atob(revisedB64);
+                        
+                        // Simple word-level diff highlighting
+                        const originalWords = original.split(/\s+/);
+                        const revisedWords = revised.split(/\s+/);
+                        
+                        let highlighted = revised;
+                        
+                        // Find words that are in revised but not in original
+                        revisedWords.forEach(word => {
+                            if (!originalWords.includes(word) && word.trim()) {
+                                const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                                const regex = new RegExp(`\\b${escapedWord}\\b`, 'gi');
+                                highlighted = highlighted.replace(regex, `<span class="diff-added">${word}</span>`);
+                            }
+                        });
+                        
+                        cell.innerHTML = highlighted;
+                    } catch (e) {
+                        console.error('Error applying diff highlighting:', e);
+                    }
+                }
+            });
         });
     </script>
 </body>

@@ -225,6 +225,97 @@ def reprocess_job(job_id):
     else:
         return jsonify({'error': result.get('error', 'Processing failed')}), 500
 
+@app.route('/api/jobs/<job_id>/revise', methods=['POST'])
+def revise_job(job_id):
+    """AI-powered revision of all translations in a job using built-in AI"""
+    job_dir = os.path.join(JOBS_DIR, job_id)
+    csv_path = os.path.join(job_dir, 'revision_table.csv')
+    
+    if not os.path.exists(csv_path):
+        return jsonify({'error': 'CSV file not found. Please process the job first.'}), 404
+    
+    try:
+        import sys
+        python_exe = sys.executable
+        scripts_dir = os.path.dirname(os.path.abspath(__file__))
+        ai_revision_script = os.path.join(scripts_dir, 'ai_revision.py')
+        
+        if not os.path.exists(ai_revision_script):
+            return jsonify({'error': 'AI revision script not found'}), 500
+        
+        print(f"[{job_id}] Starting AI revision using built-in knowledge...")
+        print(f"[{job_id}] Running: {python_exe} {ai_revision_script} {csv_path} {csv_path}")
+        
+        # Run AI revision script (no API key needed - uses built-in AI)
+        result = subprocess.run(
+            [python_exe, ai_revision_script, csv_path, csv_path],
+            capture_output=True,
+            text=True,
+            cwd=scripts_dir,
+            timeout=1800  # 30 minute timeout for AI processing
+        )
+        
+        if result.stdout:
+            print(f"[{job_id}] AI revision output:\n{result.stdout}")
+        if result.stderr:
+            print(f"[{job_id}] AI revision errors:\n{result.stderr}")
+        
+        if result.returncode != 0:
+            error_msg = result.stderr or result.stdout or 'Unknown error'
+            return jsonify({'error': f'AI revision failed: {error_msg}'}), 500
+        
+        # Parse stats from output
+        stats = {}
+        for line in result.stdout.split('\n'):
+            if 'Total segments:' in line:
+                try:
+                    stats['total'] = int(line.split(':')[-1].strip())
+                except:
+                    pass
+            elif 'Revised:' in line:
+                try:
+                    stats['revised'] = int(line.split(':')[-1].strip())
+                except:
+                    pass
+        
+        # Regenerate HTML table with updated CSV
+        html_path = os.path.join(job_dir, 'revision_table.html')
+        html_script = os.path.join(scripts_dir, 'create_html_table.py')
+        if os.path.exists(html_script):
+            subprocess.run(
+                [python_exe, html_script, csv_path, html_path, job_id],
+                capture_output=True,
+                text=True,
+                cwd=scripts_dir,
+                timeout=300
+            )
+        
+        return jsonify({
+            'message': 'AI revision completed successfully',
+            'stats': stats
+        })
+        
+    except subprocess.TimeoutExpired:
+        return jsonify({'error': 'AI revision timed out after 30 minutes'}), 500
+    except Exception as e:
+        print(f"[{job_id}] AI revision error: {str(e)}")
+        return jsonify({'error': f'AI revision error: {str(e)}'}), 500
+
+@app.route('/api/jobs/<job_id>/progress', methods=['GET'])
+def get_job_progress(job_id):
+    job_dir = os.path.join(JOBS_DIR, job_id)
+    progress_file = os.path.join(job_dir, 'progress.json')
+    
+    if os.path.exists(progress_file):
+        try:
+            with open(progress_file, 'r') as f:
+                data = json.load(f)
+            return jsonify(data)
+        except Exception:
+            pass
+            
+    return jsonify({'status': 'unknown', 'percentage': 0, 'message': 'Waiting to start...'})
+
 @app.route('/api/jobs/<job_id>', methods=['GET'])
 def get_job(job_id):
     """Get job details"""
