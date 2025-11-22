@@ -85,28 +85,16 @@ class Confetti {
 
 const confetti = new Confetti();
 
+
 // --- Dark Mode Logic ---
 function initDarkMode() {
     const toggle = document.createElement('div');
     toggle.className = 'theme-toggle';
     toggle.title = 'Toggle Dark Mode';
-    toggle.innerHTML = `
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-        </svg>
-    `;
     document.body.appendChild(toggle);
 
-    // Check local storage
-    if (localStorage.getItem('darkMode') === 'true') {
-        document.body.classList.add('dark-mode');
-    }
-
-    toggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-
-        // Update icon
+    // Function to update icon based on current mode
+    function updateIcon() {
         if (document.body.classList.contains('dark-mode')) {
             toggle.innerHTML = `
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -120,6 +108,21 @@ function initDarkMode() {
                 </svg>
             `;
         }
+    }
+
+    // Check local storage and apply dark mode
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+    }
+
+    // Set initial icon
+    updateIcon();
+
+    // Toggle on click
+    toggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        updateIcon();
     });
 }
 
@@ -354,7 +357,7 @@ async function loadJobs() {
                         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
                         </svg>
-                        ✨ Revise
+                        Revise
                     </button>
                     <button class="btn btn-secondary" onclick="reprocessJob('${job.id}')">Reprocess</button>
                     <button class="btn btn-danger" onclick="deleteJob('${job.id}')">Delete</button>
@@ -680,185 +683,98 @@ function highlightDifferences(original, revised) {
     if (!original || !revised) return formatTextWithTags(revised || original);
     if (original === revised) return formatTextWithTags(revised);
 
+    // Remove tags for comparison but keep track of their positions
     const tagPattern = /(<[^>]+>|<\/[^>]+>)/g;
     const originalClean = original.replace(tagPattern, ' ').replace(/\s+/g, ' ').trim();
     const revisedClean = revised.replace(tagPattern, ' ').replace(/\s+/g, ' ').trim();
 
     if (originalClean === revisedClean) return formatTextWithTags(revised);
 
-    // Get formatted version first (with tags)
+    // Get formatted version first (with tags preserved)
     let formatted = formatTextWithTags(revised);
     
-    // Simple approach: find words/phrases in revised that are NOT in original
-    const originalWords = new Set(originalClean.toLowerCase().split(/\s+/).filter(w => w.length > 0));
+    // Better approach: compare word by word positionally
+    const originalWords = originalClean.toLowerCase().split(/\s+/).filter(w => w.length > 0);
     const revisedWords = revisedClean.split(/\s+/).filter(w => w.length > 0);
+    const originalWordsLower = originalWords.map(w => w.toLowerCase());
     
-    // Find words that are new or changed
+    // Find words that are different or in different positions
     const wordsToHighlight = [];
-    const originalWordArray = originalClean.toLowerCase().split(/\s+/).filter(w => w.length > 0);
+    const maxLen = Math.max(originalWords.length, revisedWords.length);
     
-    // Simple word-by-word comparison
     for (let i = 0; i < revisedWords.length; i++) {
-        const revWord = revisedWords[i].toLowerCase();
-        // Check if this word exists in original at a similar position (with some tolerance)
-        let found = false;
-        const searchRange = Math.min(5, originalWordArray.length);
-        const startIdx = Math.max(0, i - searchRange);
-        const endIdx = Math.min(originalWordArray.length, i + searchRange + 1);
+        const revWord = revisedWords[i];
+        const revWordLower = revWord.toLowerCase();
         
-        for (let j = startIdx; j < endIdx; j++) {
-            if (originalWordArray[j] === revWord) {
-                found = true;
-                break;
-            }
+        // Check if word exists at same position in original
+        let foundAtPosition = false;
+        if (i < originalWordsLower.length && originalWordsLower[i] === revWordLower) {
+            foundAtPosition = true;
         }
         
-        if (!found && revWord.length > 2) {
-            wordsToHighlight.push({
-                word: revisedWords[i], // Keep original case
-                index: i
-            });
-        }
-    }
-    
-    // Also check for phrase changes (2-4 word phrases)
-    const phraseChanges = [];
-    for (let len = 4; len >= 2; len--) {
-        for (let i = 0; i <= revisedWords.length - len; i++) {
-            const phrase = revisedWords.slice(i, i + len).join(' ').toLowerCase();
-            const phraseOriginal = revisedWords.slice(i, i + len).join(' ');
+        // If not at same position, check if it exists elsewhere nearby
+        if (!foundAtPosition) {
+            let foundNearby = false;
+            const searchRange = 3;
+            const start = Math.max(0, i - searchRange);
+            const end = Math.min(originalWordsLower.length, i + searchRange + 1);
             
-            // Check if this phrase exists in original
-            const originalPhrase = originalClean.toLowerCase();
-            if (!originalPhrase.includes(phrase)) {
-                // Check if individual words exist - if all words are new, it's a phrase change
-                let allWordsNew = true;
-                for (let j = i; j < i + len; j++) {
-                    const word = revisedWords[j].toLowerCase();
-                    if (originalWords.has(word)) {
-                        allWordsNew = false;
-                        break;
-                    }
+            for (let j = start; j < end; j++) {
+                if (originalWordsLower[j] === revWordLower) {
+                    foundNearby = true;
+                    break;
                 }
-                
-                if (allWordsNew) {
-                    phraseChanges.push({
-                        phrase: phraseOriginal,
-                        startIdx: i,
-                        endIdx: i + len
-                    });
-                }
+            }
+            
+            // If word doesn't exist nearby or is in different position, highlight it
+            if (!foundNearby || !foundAtPosition) {
+                wordsToHighlight.push({
+                    word: revWord,
+                    wordLower: revWordLower,
+                    index: i
+                });
             }
         }
     }
     
-    // Remove word highlights that are part of phrase changes
-    const wordsInPhrases = new Set();
-    phraseChanges.forEach(pc => {
-        for (let i = pc.startIdx; i < pc.endIdx; i++) {
-            wordsInPhrases.add(i);
+    // Also check for completely new words
+    const originalWordsSet = new Set(originalWordsLower);
+    for (let i = 0; i < revisedWords.length; i++) {
+        const revWordLower = revisedWords[i].toLowerCase();
+        if (!originalWordsSet.has(revWordLower) && revWordLower.length > 1) {
+            // Check if not already in wordsToHighlight
+            const alreadyAdded = wordsToHighlight.some(w => w.index === i);
+            if (!alreadyAdded) {
+                wordsToHighlight.push({
+                    word: revisedWords[i],
+                    wordLower: revWordLower,
+                    index: i
+                });
+            }
         }
-    });
+    }
     
-    const wordsToHighlightFiltered = wordsToHighlight.filter(w => !wordsInPhrases.has(w.index));
+    if (wordsToHighlight.length === 0) return formatted;
     
-    // Apply highlights - work backwards through text to avoid index shifting
-    // Sort phrases by length (longest first) to match longer phrases first
-    phraseChanges.sort((a, b) => b.phrase.length - a.phrase.length);
+    // Sort by index descending to apply highlights from end to start
+    wordsToHighlight.sort((a, b) => b.index - a.index);
     
-    // Extract text content from formatted HTML (without tags) for matching
-    const extractTextContent = (html) => {
-        // Simple regex to remove HTML tags
-        return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-    };
+    // Extract text content for matching (without HTML tags)
+    const textContent = formatted.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
     
-    // Find and highlight phrases
-    for (const pc of phraseChanges) {
-        const phrase = pc.phrase;
-        const phraseLower = phrase.toLowerCase();
-        
-        // Find all occurrences in the formatted text
-        let searchText = extractTextContent(formatted).toLowerCase();
-        let positions = [];
+    // Apply highlights - use a simpler approach: find and replace in formatted text
+    for (const { word, wordLower } of wordsToHighlight) {
+        // Find the word in the text content
         let searchIndex = 0;
+        const positions = [];
         
         while (true) {
-            const index = searchText.indexOf(phraseLower, searchIndex);
+            const index = textContent.indexOf(wordLower, searchIndex);
             if (index === -1) break;
-            positions.push(index);
-            searchIndex = index + 1;
-        }
-        
-        // Apply highlights from end to start to avoid index shifting
-        for (let posIdx = positions.length - 1; posIdx >= 0; posIdx--) {
-            const textPos = positions[posIdx];
             
-            // Find corresponding position in formatted HTML
-            let charCount = 0;
-            let htmlPos = 0;
-            let inTag = false;
-            
-            for (let i = 0; i < formatted.length; i++) {
-                if (formatted[i] === '<') {
-                    inTag = true;
-                    const tagEnd = formatted.indexOf('>', i);
-                    if (tagEnd !== -1) {
-                        i = tagEnd;
-                        inTag = false;
-                        continue;
-                    }
-                }
-                if (!inTag) {
-                    if (charCount === textPos) {
-                        // Found start position
-                        const startPos = i;
-                        // Find end position
-                        let endCharCount = 0;
-                        let endPos = startPos;
-                        while (endCharCount < phrase.length && endPos < formatted.length) {
-                            if (formatted[endPos] === '<') {
-                                const tagEnd = formatted.indexOf('>', endPos);
-                                if (tagEnd !== -1) {
-                                    endPos = tagEnd + 1;
-                                    continue;
-                                }
-                            }
-                            endPos++;
-                            endCharCount++;
-                        }
-                        
-                        // Check if already highlighted
-                        const before = formatted.substring(Math.max(0, startPos - 30), startPos);
-                        if (!before.includes('diff-') || before.lastIndexOf('</span>') > before.lastIndexOf('diff-')) {
-                            const matchText = formatted.substring(startPos, endPos);
-                            formatted = formatted.substring(0, startPos) + 
-                                `<span class="diff-added">${matchText}</span>` + 
-                                formatted.substring(endPos);
-                        }
-                        break;
-                    }
-                    charCount++;
-                }
-            }
-        }
-    }
-    
-    // Highlight individual words
-    for (const w of wordsToHighlightFiltered) {
-        const word = w.word;
-        const wordLower = word.toLowerCase();
-        
-        // Find all occurrences
-        let searchText = extractTextContent(formatted).toLowerCase();
-        let positions = [];
-        let searchIndex = 0;
-        
-        while (true) {
-            const index = searchText.indexOf(wordLower, searchIndex);
-            if (index === -1) break;
             // Check word boundaries
-            const before = index > 0 ? searchText[index - 1] : ' ';
-            const after = index + wordLower.length < searchText.length ? searchText[index + wordLower.length] : ' ';
+            const before = index > 0 ? textContent[index - 1] : ' ';
+            const after = index + wordLower.length < textContent.length ? textContent[index + wordLower.length] : ' ';
             if ((/\s/.test(before) || /[^\w]/.test(before)) && (/\s/.test(after) || /[^\w]/.test(after))) {
                 positions.push(index);
             }
@@ -869,48 +785,41 @@ function highlightDifferences(original, revised) {
         for (let posIdx = positions.length - 1; posIdx >= 0; posIdx--) {
             const textPos = positions[posIdx];
             
-            // Find corresponding position in formatted HTML
+            // Find corresponding position in formatted HTML by counting characters
             let charCount = 0;
-            let htmlPos = 0;
-            let inTag = false;
+            let startPos = -1;
+            let endPos = -1;
             
             for (let i = 0; i < formatted.length; i++) {
                 if (formatted[i] === '<') {
-                    inTag = true;
+                    // Skip HTML tags
                     const tagEnd = formatted.indexOf('>', i);
                     if (tagEnd !== -1) {
                         i = tagEnd;
-                        inTag = false;
                         continue;
                     }
-                }
-                if (!inTag) {
-                    if (charCount === textPos) {
-                        const startPos = i;
-                        let endCharCount = 0;
-                        let endPos = startPos;
-                        while (endCharCount < word.length && endPos < formatted.length) {
-                            if (formatted[endPos] === '<') {
-                                const tagEnd = formatted.indexOf('>', endPos);
-                                if (tagEnd !== -1) {
-                                    endPos = tagEnd + 1;
-                                    continue;
-                                }
-                            }
-                            endPos++;
-                            endCharCount++;
-                        }
-                        
-                        const before = formatted.substring(Math.max(0, startPos - 30), startPos);
-                        if (!before.includes('diff-') || before.lastIndexOf('</span>') > before.lastIndexOf('diff-')) {
-                            const matchText = formatted.substring(startPos, endPos);
-                            formatted = formatted.substring(0, startPos) + 
-                                `<span class="diff-added">${matchText}</span>` + 
-                                formatted.substring(endPos);
-                        }
-                        break;
+                } else {
+                    if (charCount === textPos && startPos === -1) {
+                        startPos = i;
+                    }
+                    if (startPos !== -1 && charCount < textPos + word.length) {
+                        endPos = i + 1;
                     }
                     charCount++;
+                }
+            }
+            
+            if (startPos !== -1 && endPos !== -1) {
+                // Check if already highlighted
+                const beforeText = formatted.substring(Math.max(0, startPos - 50), startPos);
+                if (!beforeText.includes('diff-added')) {
+                    const matchText = formatted.substring(startPos, endPos);
+                    // Don't highlight if it's already inside a diff span
+                    if (!matchText.includes('diff-added') && !matchText.includes('<span')) {
+                        formatted = formatted.substring(0, startPos) + 
+                            `<span class="diff-added">${matchText}</span>` + 
+                            formatted.substring(endPos);
+                    }
                 }
             }
         }
@@ -990,6 +899,8 @@ function editRevision(button) {
     const cancelButton = button.parentElement.querySelector('.cancel-button');
     const copyButton = button.parentElement.querySelector('.copy-button');
 
+    if (!textDiv || !textarea) return;
+
     textDiv.classList.add('editing');
     textarea.classList.add('editing');
     editButton.style.display = 'none';
@@ -1010,9 +921,35 @@ function saveRevision(button) {
     const copyButton = button.parentElement.querySelector('.copy-button');
     const badge = document.getElementById('badge-' + matecatId);
 
+    if (!textDiv || !textarea) return;
+
     const newText = textarea.value;
-    const formattedText = formatTextWithTags(newText);
-    textDiv.innerHTML = formattedText + '<span class="edited-badge">EDITED</span>';
+    
+    // Check if it's an AI revision or XLF revision
+    const isAiRevision = matecatId.includes('-ai');
+    const isXlfRevision = matecatId.includes('-xlf');
+    
+    // Get the original target for comparison
+    let originalTarget = '';
+    const baseMatecatId = matecatId.replace(/-ai$/, '').replace(/-xlf$/, '');
+    const row = document.querySelector(`tr[data-matecat-id="${baseMatecatId}"]`);
+    if (row) {
+        const targetCell = row.querySelector('.target-col');
+        if (targetCell && targetCell.dataset.rawTarget) {
+            originalTarget = targetCell.dataset.rawTarget;
+        }
+    }
+    
+    // Highlight differences if we have original target
+    let formattedText;
+    if (originalTarget && (isAiRevision || isXlfRevision)) {
+        formattedText = highlightDifferences(originalTarget, newText);
+    } else {
+        formattedText = formatTextWithTags(newText);
+    }
+    
+    const badgeHtml = isAiRevision ? '<span class="ai-badge">AI</span>' : '';
+    textDiv.innerHTML = formattedText + badgeHtml + '<span class="edited-badge">EDITED</span>';
     textDiv.classList.remove('editing');
     textarea.classList.remove('editing');
 
@@ -1048,16 +985,41 @@ function cancelEdit(button) {
     const cancelButton = button;
     const copyButton = button.parentElement.querySelector('.copy-button');
 
+    if (!textDiv || !textarea) return;
+
     const originalB64 = textarea.getAttribute('data-original-b64');
     const savedText = localStorage.getItem('revision_' + matecatId);
     const textToShow = savedText || atob(originalB64);
 
     const badge = document.getElementById('badge-' + matecatId);
+    const isAiRevision = matecatId.includes('-ai');
+    const isXlfRevision = matecatId.includes('-xlf');
+    const badgeHtml = isAiRevision ? '<span class="ai-badge">AI</span>' : '';
+    
+    // Get the original target for comparison
+    let originalTarget = '';
+    const baseMatecatId = matecatId.replace(/-ai$/, '').replace(/-xlf$/, '');
+    const row = document.querySelector(`tr[data-matecat-id="${baseMatecatId}"]`);
+    if (row) {
+        const targetCell = row.querySelector('.target-col');
+        if (targetCell && targetCell.dataset.rawTarget) {
+            originalTarget = targetCell.dataset.rawTarget;
+        }
+    }
+    
+    // Highlight differences if we have original target
+    let formattedText;
+    if (originalTarget && (isAiRevision || isXlfRevision)) {
+        formattedText = highlightDifferences(originalTarget, textToShow);
+    } else {
+        formattedText = formatTextWithTags(textToShow);
+    }
+    
     if (savedText && badge) {
-        textDiv.innerHTML = formatTextWithTags(textToShow) + '<span class="edited-badge">EDITED</span>';
+        textDiv.innerHTML = formattedText + badgeHtml + '<span class="edited-badge">EDITED</span>';
         badge.style.display = 'inline-block';
     } else {
-        textDiv.innerHTML = formatTextWithTags(textToShow);
+        textDiv.innerHTML = formattedText + badgeHtml;
         if (badge) badge.style.display = 'none';
     }
 
@@ -1101,13 +1063,13 @@ function renderTable(rows, containerId) {
             </div>
             <div class="stat-box xlf-revisions" data-filter="xlf-revisions" onclick="applyStatFilter('xlf-revisions')">
                 <h3>${withXlfRevisions}</h3>
-                <p>XLF Revisions</p>
+                <p>Revision</p>
             </div>
             <div class="stat-box warning" data-filter="error-codes" onclick="applyStatFilter('error-codes')">
                 <h3>${withCodes}</h3>
                 <p>With Error Codes</p>
             </div>
-            <div class="stat-box warning" data-filter="major-errors" onclick="applyStatFilter('major-errors')">
+            <div class="stat-box major-errors ${majorErrors > 0 ? 'has-errors' : ''}" data-filter="major-errors" onclick="applyStatFilter('major-errors')">
                 <h3>${majorErrors}</h3>
                 <p>Major Errors (TE-2)</p>
             </div>
@@ -1146,13 +1108,6 @@ function renderTable(rows, containerId) {
             <div class="filter-group">
                 <label for="searchBox">Search</label>
                 <input type="text" id="searchBox" placeholder="Search in source, target, or revision..." oninput="filterTable()">
-            </div>
-            <div class="checkbox-group">
-                <label for="revisionsOnly">Options</label>
-                <label class="checkbox-wrapper">
-                    <input type="checkbox" id="revisionsOnly" onchange="filterTable()">
-                    <span>Show only revisions</span>
-                </label>
             </div>
         </div>
     `;
@@ -1213,15 +1168,35 @@ function renderTable(rows, containerId) {
         let newTargetDisplay = '<em>No revision</em>';
         if (newTargetRaw) {
             const newTargetB64 = btoa(unescape(encodeURIComponent(newTargetRaw)));
+            const newTargetWithDiff = highlightDifferences(targetRaw, newTargetRaw);
             newTargetDisplay = `
                 <div class="has-revision xlf-revision" data-matecat-id="${matecatId}-xlf">
-                    <div class="revision-text" id="text-${matecatId}-xlf">${newTarget}</div>
+                    <div class="revision-text" id="text-${matecatId}-xlf">${newTargetWithDiff}<span class="edited-badge" id="badge-${matecatId}-xlf" style="display: none;">EDITED</span></div>
+                    <textarea class="revision-textarea" id="textarea-${matecatId}-xlf" data-original-b64="${newTargetB64}">${escapeHtml(newTargetRaw)}</textarea>
                     <div class="button-group">
-                        <button class="copy-button" data-text-b64="${newTargetB64}" onclick="copyToClipboard(this)" title="Copy XLF revision">
+                        <button class="copy-button" data-text-b64="${newTargetB64}" data-matecat-id="${matecatId}-xlf" onclick="copyToClipboard(this)" title="Copy revision">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                             </svg>
                             Copy
+                        </button>
+                        <button class="edit-button" data-matecat-id="${matecatId}-xlf" onclick="editRevision(this)" title="Edit revision">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                            Edit
+                        </button>
+                        <button class="save-button" data-matecat-id="${matecatId}-xlf" onclick="saveRevision(this)" title="Save changes" style="display: none;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Save
+                        </button>
+                        <button class="cancel-button" data-matecat-id="${matecatId}-xlf" onclick="cancelEdit(this)" title="Cancel editing" style="display: none;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Cancel
                         </button>
                     </div>
                 </div>
@@ -1241,7 +1216,7 @@ function renderTable(rows, containerId) {
 
             aiRevisionDisplay = `
                 <div class="has-revision ai-revision" data-matecat-id="${matecatId}-ai">
-                    <div class="revision-text" id="text-${matecatId}-ai">${aiRevisionWithDiff}<span class="ai-badge">✨ AI</span>${confidenceBadge}<span class="edited-badge" id="badge-${matecatId}-ai" style="display: none;">EDITED</span></div>
+                    <div class="revision-text" id="text-${matecatId}-ai">${aiRevisionWithDiff}<span class="ai-badge">AI</span>${confidenceBadge}<span class="edited-badge" id="badge-${matecatId}-ai" style="display: none;">EDITED</span></div>
                     <textarea class="revision-textarea" id="textarea-${matecatId}-ai" data-original-b64="${aiRevisionB64}">${escapeHtml(aiRevisionRaw)}</textarea>
                     <div class="button-group">
                         <button class="copy-button" data-text-b64="${aiRevisionB64}" data-matecat-id="${matecatId}-ai" onclick="copyToClipboard(this)" title="Copy AI revision">
@@ -1278,7 +1253,7 @@ function renderTable(rows, containerId) {
                 <td class="id-col">${matecatId}${aiRevisionRaw ? '<span class="ai-badge">✨ AI</span>' : newTargetRaw ? '<span class="xlf-badge">📄 XLF</span>' : ''}</td>
                 <td class="state-col">${stateBadge}</td>
                 <td class="source-col">${source}</td>
-                <td class="target-col">${target}</td>
+                <td class="target-col" data-raw-target="${escapeHtml(targetRaw)}">${target}</td>
                 <td class="new-target-col ${newTargetRaw ? 'has-revision xlf-revision-col' : ''}">${newTargetDisplay}</td>
                 <td class="ai-revision-col ${aiRevisionRaw ? 'has-revision ai-revision-col' : ''}">${aiRevisionDisplay}</td>
                 <td class="code-col">${codeHtml}</td>
@@ -1298,7 +1273,7 @@ function renderTable(rows, containerId) {
                         <th>State</th>
                         <th>Source</th>
                         <th>Target</th>
-                        <th class="xlf-revision-header">📄 XLF Revision</th>
+                        <th class="xlf-revision-header">📄 Revision</th>
                         <th class="ai-revision-header">✨ AI Revision</th>
                         <th>Code</th>
                         <th>Comment</th>
@@ -1327,11 +1302,8 @@ function applyStatFilter(filterType) {
 
     const codeFilter = document.getElementById('codeFilter');
     const stateFilter = document.getElementById('stateFilter');
-    const revisionsOnly = document.getElementById('revisionsOnly');
-
     if (codeFilter) codeFilter.value = '';
     if (stateFilter) stateFilter.value = '';
-    if (revisionsOnly) revisionsOnly.checked = false;
 
     const activeBox = document.querySelector(`[data-filter="${filterType}"]`);
     if (activeBox) {
@@ -1339,11 +1311,7 @@ function applyStatFilter(filterType) {
     }
 
     if (filterType === 'all') {
-    } else if (filterType === 'ai-revisions') {
-        if (revisionsOnly) revisionsOnly.checked = true;
-    } else if (filterType === 'xlf-revisions') {
-        if (revisionsOnly) revisionsOnly.checked = true;
-    } else if (filterType === 'error-codes') {
+    } else     if (filterType === 'error-codes') {
     } else if (filterType === 'major-errors') {
         if (codeFilter) codeFilter.value = 'TE-2';
     }
@@ -1358,7 +1326,6 @@ function filterTable() {
     const stateFilter = document.getElementById('stateFilter')?.value || '';
     const idRangeMin = document.getElementById('idRangeMin')?.value;
     const idRangeMax = document.getElementById('idRangeMax')?.value;
-    const revisionsOnly = document.getElementById('revisionsOnly')?.checked || false;
     const searchText = (document.getElementById('searchBox')?.value || '').toLowerCase();
     const activeStatFilter = window.activeStatFilter || '';
     const table = document.getElementById('revisionTable');
@@ -1379,14 +1346,6 @@ function filterTable() {
     window._statFilterTriggered = false;
 
     const rows = table.getElementsByTagName('tr');
-    const checkboxWrapper = document.getElementById('revisionsOnly')?.closest('.checkbox-wrapper');
-    if (checkboxWrapper) {
-        if (revisionsOnly) {
-            checkboxWrapper.classList.add('checked');
-        } else {
-            checkboxWrapper.classList.remove('checked');
-        }
-    }
 
     const minId = idRangeMin ? parseInt(idRangeMin) : null;
     const maxId = idRangeMax ? parseInt(idRangeMax) : null;
@@ -1420,7 +1379,6 @@ function filterTable() {
         if (codeFilter && !code.includes(codeFilter)) show = false;
         if (stateFilter && state !== stateFilter) show = false;
         if (!inRange) show = false;
-        if (revisionsOnly && !hasRevision) show = false;
         if (searchText && !source.includes(searchText) && !target.includes(searchText) && !newTarget.includes(searchText) && !aiRevision.includes(searchText)) show = false;
 
         const hasXlfRevision = row.getAttribute('data-has-xlf-revision') === 'true';
