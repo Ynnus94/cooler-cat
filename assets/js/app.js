@@ -1004,8 +1004,10 @@ function saveRevision(button) {
         }
     }
     
-    // Format text (no highlighting, but shows ° for non-breaking spaces)
-    const formattedText = formatTextWithTags(newText);
+    // Re-apply highlighting with differences from target
+    const formattedText = isAiRevision ? 
+        highlightDifferences(originalTarget, newText, true) : 
+        highlightDifferences(originalTarget, newText, false);
     
     const badgeHtml = isAiRevision ? '<span class="ai-badge">AI</span>' : '';
     textDiv.innerHTML = formattedText + badgeHtml + '<span class="edited-badge">EDITED</span>';
@@ -1070,8 +1072,10 @@ function cancelEdit(button) {
         }
     }
     
-    // Format text (no highlighting, but shows ° for non-breaking spaces)
-    const formattedText = formatTextWithTags(rawText);
+    // Re-apply highlighting with differences from target
+    const formattedText = isAiRevision ? 
+        highlightDifferences(originalTarget, rawText, true) : 
+        highlightDifferences(originalTarget, rawText, false);
     
     if (savedText && badge) {
         textDiv.innerHTML = formattedText + badgeHtml + '<span class="edited-badge">EDITED</span>';
