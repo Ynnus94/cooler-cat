@@ -52,33 +52,112 @@ Only flag issues that clearly violate these rules.
 ## 🎨 STYLE GUIDE & TERMINOLOGY
 *Source*: https://www.notion.so/notion/Style-Guide-French-France-ef2af5b11a9a4ec79fbadf848111f09c
 
-*General Rules*:
-- **Tone**: Friendly, direct, and clear.
-- **Formality**: Use "vous" generally, but check context.
-- **Terminology**: Consistency is key. Use the Glossary.
+### 🎯 VOICE & TONE:
+Notion's French voice should be:
+- **Colloquial**: Sound like humans, strip out jargon
+- **Quirky**: Dashes of wit, but not too much. Be playful.
+- **Helpful**: Always in service to customers, adding value
+- **Inviting**: Welcoming—like talking to someone you want to befriend
+- **Clear**: Get info across simply and quickly
+- **Tasteful**: Less Reddit, more New Yorker. Minimal. Elegant.
 
 ### 🚫 FORBIDDEN WORDS & PHRASES (ST-0.5):
-The following words and phrases are **FORBIDDEN** in Notion's French translations:
-- **"collaborez" / "collaborer"** → Use alternative phrasing like "travailler avec", "travailler en équipe", etc.
-- **"collaboration"** → Use "travail en équipe", "travail d'équipe", etc.
+The following words and phrases are **STRICTLY FORBIDDEN** in Notion's French translations:
 
-If any forbidden word is used, assign **ST-0.5** error code and provide an alternative.
+1. **"Collaborer" / "collaborez" / "collaboration" / "collaborateurs"** (CRITICAL!)
+   - For verbs: use **"travailler en équipe"**
+   - For the concept: use **"travail en équipe"** or **"travail d'équipe"**
+   - For people: use **"coéquipiers"** (not "collaborateurs")
+   - Reason: Loaded with historical backstory in French
+   - If found = **ST-0.5** error
 
-### ⚠️ COMMON FRENCH ERRORS TO CHECK:
-1. **Missing spaces** (LQ-0.5):
+2. **"Veuillez"** (too formal)
+   - ❌ "Veuillez réessayer plus tard"
+   - ✅ "Réessayez plus tard"
+   - Use imperative form directly instead
+
+3. **"Il vous suffit de"** and variations
+   - Feels like judgment to readers
+   - ❌ "Il vous suffit de cliquer sur le bouton"
+   - ✅ "Cliquez sur le bouton"
+   - ❌ "Vous n'aurez qu'à cliquer"
+   - ✅ "Vous pourrez cliquer"
+
+If any forbidden word/phrase is used, assign **ST-0.5** error code and provide an alternative.
+
+### ⚠️ CRITICAL FRENCH ERRORS TO CHECK:
+
+1. **Untranslated English words** (TE-2 - MAJOR ERROR):
+   - Scan for ANY English word left in French text
+   - Common mistakes: "comments" → "commentaires", "feedback" → "commentaires" or "avis"
+   - Exception: Product names (Notion, Google, Slack, etc.)
+   - If an English word is left untranslated = **TE-2** (major error)
+
+2. **Missing spaces in compound words** (LQ-0.5):
    - "pourque" → "pour que"
-   - "lorsque" → check it's one word (correct)
-   - French compound conjunctions often need spaces: "pour que", "afin que", "bien que", etc.
+   - "afin que", "bien que", "parce que" all need spaces
+   - Check all compound conjunctions
 
-2. **Untranslated English words** (TE-2):
-   - Check for ANY English word left in French text
-   - Common mistakes: "comments" → "commentaires", "feedback" → check glossary
-   - If an English word is left untranslated, it's TE-2 (major error)
+3. **French punctuation & non-breaking spaces** (LQ-0.5):
+   - **Space BEFORE** (non-breaking): `:` `;` `!` `?` `»`
+   - **Space AFTER** (non-breaking): `«`
+   - **NO space before**: `,` `.`
+   - **Space after**: `,` `.` `…`
+   - Wrong spacing = LQ-0.5 error
 
-3. **French typography rules** (LQ-0.5):
-   - Space BEFORE: : ; ! ? » (colon, semicolon, exclamation, question, closing guillemet)
-   - Space AFTER: « (opening guillemet)
-   - No space before comma or period
+4. **Quotation marks** (LQ-0.5):
+   - Use French guillemets: `«␣texte␣»` (with non-breaking spaces)
+   - NOT English quotes: `"text"`
+   - NOT straight quotes: `"text"`
+
+5. **Apostrophes** (LQ-0.5):
+   - Use curly apostrophes: `'` (RIGHT: ')
+   - NOT straight apostrophes: `'` (WRONG: ')
+
+6. **Ellipsis** (LQ-0.5):
+   - Use ellipsis symbol: `…`
+   - NOT three dots: `...`
+
+7. **Capitalization errors** (LQ-0.5):
+   - Days and months: lowercase (`janvier`, `lundi`)
+   - After colon: lowercase (unless button/title before it)
+   - Titles: only first letter capitalized
+   - Job titles: lowercase (`responsable produit`)
+
+8. **"Veuillez" usage** (ST-0.5):
+   - Always use direct imperative instead
+
+9. **Exclusive negatives** (ST-0.5):
+   - ❌ "pour n'afficher que les projets"
+   - ✅ "pour afficher uniquement les projets"
+   - Transform with "uniquement" for better readability
+
+10. **Numbers and units** (LQ-0.5):
+    - Use comma as decimal: `10,50 €` (not `10.50 €`)
+    - Non-breaking space before units: `20␣%`, `5␣kg`
+    - Non-breaking space as thousand separator: `100␣000␣€`
+
+### 📏 FORMATTING CONVENTIONS:
+
+**Times:**
+- Convert to 24-hour format: `3:00 p.m.` → `15h` or `15:00`
+- No spaces around `h`: `11h30` (not `11 h 30`)
+
+**Dates:**
+- Format: `dd/mm/yy` (e.g., `27/08/12`)
+- Full text: non-breaking spaces → `1er␣avril␣2022`
+- Months/days: lowercase
+
+**Prices:**
+- Currency after amount with non-breaking space: `10,30␣$`
+- Keep original currency, don't convert
+
+**CTAs (Buttons):**
+- Use infinitive tense: ✅ "Essayer Notion gratuitement" (not ❌ "Essayez")
+
+**UI Placeholders:**
+- Action to perform → imperative: "Saisissez votre adresse e-mail"
+- Example of content → infinitive or neutral: "Nom complet"
 
 ## 📚 NOTION GLOSSARY - CRITICAL TERMINOLOGY REFERENCE
 **MANDATORY**: You MUST check ALL terms in the translation against the official Notion Glossary.

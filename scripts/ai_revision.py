@@ -111,15 +111,61 @@ Target (French): "{target}"
 
 CRITICAL INSTRUCTIONS - MULTI-PASS REVIEW:
 
-**PASS 1 - BASIC QUALITY CHECK (MANDATORY):**
-1. **UNTRANSLATED ENGLISH WORDS**: Scan the French target for ANY English word that should have been translated. This is CRITICAL. Examples: "comments" → "commentaires", "feedback" → check glossary. ANY untranslated English word = TE-2.
-2. **MISSING SPACES**: Check for compound words that need spaces: "pourque" → "pour que", "afin que", "bien que", "parce que". Missing space = LQ-0.5.
-3. **TYPOS**: Check for obvious spelling errors. ANY typo is LQ-0.5.
-4. **VERB CONJUGATION**: Verify verbs are conjugated correctly (imperative, tense, subject agreement). Errors are TE-0.5 or LQ-0.5.
-5. **GENDER/NUMBER AGREEMENT**: Check adjectives, articles, and participles agree with nouns. Errors are TE-0.5 or LQ-0.5.
-6. **PUNCTUATION**: Check for proper French punctuation (space before :;!?», space after «, no space before comma/period). Errors are LQ-0.5.
-7. **MEANING ACCURACY**: Verify the translation conveys the same meaning as the source. Major changes or negation errors are TE-2.
-8. **FORBIDDEN WORDS**: Check if "collaborez", "collaborer", "collaboration" are used. These are FORBIDDEN per Style Guide. Use alternatives like "travailler avec", "travailler en équipe". If found = ST-0.5.
+**PASS 1 - CRITICAL ERRORS (MANDATORY - CHECK EVERY SINGLE ONE):**
+
+1. **UNTRANSLATED ENGLISH WORDS** (TE-2 - CRITICAL!):
+   - Scan EVERY word in French target for English words
+   - Examples: "comments" → "commentaires", "feedback" → "commentaires"
+   - Exceptions: Product names (Notion, Google, Slack)
+   - ANY untranslated word = TE-2
+
+2. **FORBIDDEN WORDS** (ST-0.5 - CRITICAL!):
+   - "collaborer" / "collaborez" / "collaboration" / "collaborateurs" → FORBIDDEN!
+     Replace with: "travailler en équipe", "travail en équipe", "coéquipiers"
+   - "Veuillez" → FORBIDDEN! Use direct imperative instead
+     "Veuillez réessayer" → "Réessayez"
+   - "il vous suffit de" / "vous n'aurez qu'à" → FORBIDDEN!
+     "Il vous suffit de cliquer" → "Cliquez"
+   - If ANY forbidden word found = ST-0.5
+
+3. **MISSING SPACES IN COMPOUND WORDS** (LQ-0.5):
+   - "pourque" → "pour que"
+   - Check: "afin que", "bien que", "parce que", "lorsque vous"
+   - Missing space = LQ-0.5
+
+4. **FRENCH PUNCTUATION & NON-BREAKING SPACES** (LQ-0.5):
+   - Space BEFORE: : ; ! ? »
+   - Space AFTER: «
+   - NO space before: , .
+   - Wrong spacing = LQ-0.5
+
+5. **TYPOS & SPELLING** (LQ-0.5):
+   - Check every word for spelling errors
+   - "poru" → "pour", etc.
+   - ANY typo = LQ-0.5
+
+**PASS 2 - GRAMMAR & STYLE:**
+
+6. **VERB CONJUGATION** (TE-0.5 / LQ-0.5):
+   - Check imperative, tense, subject agreement
+   - "utiliser" → "utilisez" (imperative)
+
+7. **GENDER/NUMBER AGREEMENT** (TE-0.5 / LQ-0.5):
+   - Adjectives, articles, participles must agree
+   - "levé" → "levés" (plural)
+
+8. **EXCLUSIVE NEGATIVES** (ST-0.5):
+   - "pour n'afficher que" → "pour afficher uniquement"
+   - Transform negatives with "uniquement"
+
+9. **CAPITALIZATION** (LQ-0.5):
+   - Days/months: lowercase ("janvier", "lundi")
+   - After colon: lowercase
+   - Job titles: lowercase
+
+10. **MEANING ACCURACY** (TE-2):
+    - Verify translation = same meaning as source
+    - Negation errors, omissions = TE-2
 
 **PASS 2 - GLOSSARY VALIDATION (MANDATORY):**
 6. **TERMINOLOGY CHECK**: Identify ALL terms in the source text that might be in the Notion Glossary. For EACH term found in the glossary, verify the French translation matches the official fr_FR entry exactly. If ANY glossary term is translated incorrectly, assign TC-0.5 error code.
@@ -154,51 +200,67 @@ OUTPUT FORMAT (JSON ONLY, NO MARKDOWN):
 
 EXAMPLES:
 
-Example 1 - Untranslated English word (CRITICAL):
+Example 1 - Untranslated English word (TE-2):
 Source: "Jump to the latest comments"
 Target: "Accéder rapidement aux derniers comments"
 Output: {{"revised_text": "Accéder rapidement aux derniers commentaires", "error_codes": ["TE-2"], "comment": "Untranslated English word: 'comments' → 'commentaires'", "confidence_score": 100}}
 
-Example 2 - Missing space:
+Example 2 - Forbidden word "collaborez" (ST-0.5):
+Source: "When collaborating with your team"
+Target: "lorsque vous collaborez avec votre équipe"
+Output: {{"revised_text": "lorsque vous travaillez en équipe", "error_codes": ["ST-0.5"], "comment": "Forbidden word: 'collaborez' → use 'travaillez en équipe'", "confidence_score": 100}}
+
+Example 3 - Forbidden word "Veuillez" (ST-0.5):
+Source: "Please try again later"
+Target: "Veuillez réessayer plus tard"
+Output: {{"revised_text": "Réessayez plus tard", "error_codes": ["ST-0.5"], "comment": "Forbidden word: 'Veuillez' → use direct imperative 'Réessayez'", "confidence_score": 100}}
+
+Example 4 - Missing space (LQ-0.5):
 Source: "So you can spot what matters"
 Target: "pourque vous puissiez repérer l'essentiel"
 Output: {{"revised_text": "pour que vous puissiez repérer l'essentiel", "error_codes": ["LQ-0.5"], "comment": "Missing space: 'pourque' → 'pour que'", "confidence_score": 100}}
 
-Example 3 - Forbidden word:
-Source: "When collaborating with your team"
-Target: "lorsque vous collaborez avec votre équipe"
-Output: {{"revised_text": "lorsque vous travaillez en équipe", "error_codes": ["ST-0.5"], "comment": "Forbidden word: 'collaborez' is not allowed per Style Guide. Use 'travaillez en équipe' instead", "confidence_score": 95}}
-
-Example 4 - Missing negation:
-Source: "I cannot do this"
-Target: "Je peux faire cela"
-Output: {{"revised_text": "Je ne peux pas faire cela", "error_codes": ["TE-2"], "comment": "Missing negation - 'cannot' was translated as 'can'", "confidence_score": 95}}
-
-Example 5 - Typo:
+Example 5 - Typo (LQ-0.5):
 Source: "Click here to continue"
 Target: "Cliquez ici poru continuer"
 Output: {{"revised_text": "Cliquez ici pour continuer", "error_codes": ["LQ-0.5"], "comment": "Typo: 'poru' → 'pour'", "confidence_score": 100}}
 
-Example 6 - Verb conjugation + agreement:
-Source: "Please share feedback and use thumbs up/down"
-Target: "Partagez vos commentaires et utiliser les pouces levé/baissé"
-Output: {{"revised_text": "Partagez vos commentaires et utilisez les pouces levés/baissés", "error_codes": ["TE-0.5", "TE-0.5"], "comment": "Verb conjugation: 'utiliser' → 'utilisez' (imperative); Agreement: 'levé/baissé' → 'levés/baissés' (plural)", "confidence_score": 100}}
+Example 6 - Multiple errors (TE-0.5, TE-0.5, LQ-0.5):
+Source: "Please share feedback and use thumbs up/down on any undesirable output!"
+Target: "Partagez vos commentaires dans #channel et utiliser les pouces levé/baissé poru tout résultat indésirable !"
+Output: {{"revised_text": "Partagez vos commentaires dans #channel et utilisez les pouces levés/baissés pour tout résultat indésirable !", "error_codes": ["TE-0.5", "TE-0.5", "LQ-0.5"], "comment": "Verb conjugation: 'utiliser' → 'utilisez'; Agreement: 'levé/baissé' → 'levés/baissés'; Typo: 'poru' → 'pour'", "confidence_score": 100}}
 
-Example 7 - No errors:
+Example 7 - Forbidden phrase "il vous suffit de" (ST-0.5):
+Source: "Just click the button"
+Target: "Il vous suffit de cliquer sur le bouton"
+Output: {{"revised_text": "Cliquez sur le bouton", "error_codes": ["ST-0.5"], "comment": "Forbidden phrase: 'Il vous suffit de' → use direct imperative", "confidence_score": 100}}
+
+Example 8 - No errors:
 Source: "Hello world"
 Target: "Bonjour le monde"
 Output: {{"revised_text": "Bonjour le monde", "error_codes": [], "comment": null, "confidence_score": 100}}
 
-REMEMBER - CRITICAL PRIORITIES:
-1. **FIRST**: Scan for untranslated English words (TE-2)
-2. **SECOND**: Check for missing spaces in compound words (LQ-0.5)
-3. **THIRD**: Check for forbidden words: "collaborez", "collaborer", "collaboration" (ST-0.5)
-4. **FOURTH**: Check typos, grammar, verb conjugation, agreement
-5. **FIFTH**: Check glossary terms
-6. **SIXTH**: Check style and tone
-- If there's ANY error, FIX IT in revised_text
-- ALWAYS assign appropriate error codes for EVERY error found
-- Be thorough - don't skip any checks!
+REMEMBER - SYSTEMATIC REVIEW REQUIRED:
+
+**🚨 CRITICAL CHECKS (Do NOT skip these!):**
+1. Scan EVERY word for untranslated English (TE-2)
+2. Check for forbidden words: "collabor*", "Veuillez", "il vous suffit de" (ST-0.5)
+3. Check for missing spaces: "pourque", "afin que", etc. (LQ-0.5)
+4. Check ALL punctuation and spacing (LQ-0.5)
+5. Check for typos and spelling errors (LQ-0.5)
+
+**📋 STANDARD CHECKS:**
+6. Verb conjugation and agreement (TE-0.5/LQ-0.5)
+7. Exclusive negatives → use "uniquement" (ST-0.5)
+8. Check glossary terms (TC-0.5)
+9. Verify meaning accuracy (TE-2 for major errors)
+
+**✅ OUTPUT REQUIREMENTS:**
+- If ANY error found → FIX IT in revised_text
+- Assign ALL appropriate error codes
+- Explain EACH error in comment
+- Be systematic - check ALL 10 points above
+- Don't let ANY forbidden word slip through!
 """
 
     def _empty_result(self, text, confidence=0):
