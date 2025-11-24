@@ -656,10 +656,46 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// Convert non-breaking spaces to visible symbol (°) for display
+function showNonBreakingSpaces(text) {
+    if (!text) return text;
+    // Replace various forms of non-breaking spaces with °
+    return text
+        .replace(/\u00A0/g, '°')      // Regular non-breaking space
+        .replace(/\u202F/g, '°')      // Narrow no-break space
+        .replace(/&nbsp;/g, '°')      // HTML entity
+        .replace(/&#160;/g, '°')      // HTML numeric entity
+        .replace(/&#xA0;/g, '°');     // HTML hex entity
+}
+
+// Visualize all whitespace characters for AI Revision display
+function visualizeWhitespace(text) {
+    if (!text) return text;
+    return text
+        .replace(/ /g, '·')           // Regular space → middle dot
+        .replace(/\u00A0/g, '°')       // Non-breaking space → degree symbol
+        .replace(/\u202F/g, '°')       // Narrow no-break space → degree symbol
+        .replace(/\t/g, '→')           // Tab → right arrow
+        .replace(/\n/g, '↵')           // Newline → return symbol
+        .replace(/\r/g, '')            // Carriage return (remove, handled by \n)
+        .replace(/&nbsp;/g, '°')       // HTML entity non-breaking space
+        .replace(/&#160;/g, '°')       // HTML numeric entity
+        .replace(/&#xA0;/g, '°');      // HTML hex entity
+}
+
+// Convert visible symbol (°) back to non-breaking space for saving
+function restoreNonBreakingSpaces(text) {
+    if (!text) return text;
+    // Replace ° with regular non-breaking space (most common)
+    return text.replace(/°/g, '\u00A0');
+}
+
 function formatTextWithTags(text) {
     if (!text) return '';
+    // Show non-breaking spaces as ° in display
+    const textWithSymbols = showNonBreakingSpaces(text);
     const tagPattern = /(<[^>]+>|<\/[^>]+>)/g;
-    const parts = text.split(tagPattern);
+    const parts = textWithSymbols.split(tagPattern);
     const formattedParts = [];
     for (const part of parts) {
         if (tagPattern.test(part)) {
@@ -679,146 +715,165 @@ function formatTextWithTags(text) {
     return formattedParts.join('');
 }
 
-function highlightDifferences(original, revised) {
-    if (!original || !revised) return formatTextWithTags(revised || original);
-    if (original === revised) return formatTextWithTags(revised);
+// Format text with tags AND visualize all whitespace (for AI Revision column)
+function formatTextWithTagsAndWhitespace(text) {
+    if (!text) return '';
+    // Visualize all whitespace characters
+    const textWithWhitespace = visualizeWhitespace(text);
+    const tagPattern = /(<[^>]+>|<\/[^>]+>)/g;
+    const parts = textWithWhitespace.split(tagPattern);
+    const formattedParts = [];
+    for (const part of parts) {
+        if (tagPattern.test(part)) {
+            if (part.startsWith('</')) {
+                formattedParts.push(`<span class="tag tag-closing">${escapeHtml(part)}</span>`);
+            } else {
+                formattedParts.push(`<span class="tag">${escapeHtml(part)}</span>`);
+            }
+        } else {
+            if (part.trim()) {
+                formattedParts.push(`<span class="text-content">${escapeHtml(part)}</span>`);
+            } else {
+                formattedParts.push(escapeHtml(part));
+            }
+        }
+    }
+    return formattedParts.join('');
+}
+
+function highlightDifferences(original, revised, showWhitespace = false) {
+    const formatFunc = showWhitespace ? formatTextWithTagsAndWhitespace : formatTextWithTags;
+    
+    if (!original || !revised) return formatFunc(revised || original);
+    if (original === revised) return formatFunc(revised);
 
     // Remove tags for comparison but keep track of their positions
     const tagPattern = /(<[^>]+>|<\/[^>]+>)/g;
     const originalClean = original.replace(tagPattern, ' ').replace(/\s+/g, ' ').trim();
     const revisedClean = revised.replace(tagPattern, ' ').replace(/\s+/g, ' ').trim();
 
-    if (originalClean === revisedClean) return formatTextWithTags(revised);
+    if (originalClean === revisedClean) return formatFunc(revised);
 
-    // Get formatted version first (with tags preserved)
-    let formatted = formatTextWithTags(revised);
+    // Get formatted version first (with tags preserved, and optionally with whitespace visualization)
+    let formatted = formatFunc(revised);
     
-    // Better approach: compare word by word positionally
-    const originalWords = originalClean.toLowerCase().split(/\s+/).filter(w => w.length > 0);
+    // Use a word-level diff algorithm to find what actually changed
+    // Split into words for comparison
+    const originalWords = originalClean.split(/\s+/).filter(w => w.length > 0);
     const revisedWords = revisedClean.split(/\s+/).filter(w => w.length > 0);
+    
+    // Find the longest common subsequence to identify unchanged parts
+    // Then highlight only the parts that differ
     const originalWordsLower = originalWords.map(w => w.toLowerCase());
+    const revisedWordsLower = revisedWords.map(w => w.toLowerCase());
     
-    // Find words that are different or in different positions
+    // Conservative approach: only highlight words that are completely new (don't exist in original)
+    // This avoids false positives from reordering or word position changes
     const wordsToHighlight = [];
-    const maxLen = Math.max(originalWords.length, revisedWords.length);
-    
-    for (let i = 0; i < revisedWords.length; i++) {
-        const revWord = revisedWords[i];
-        const revWordLower = revWord.toLowerCase();
-        
-        // Check if word exists at same position in original
-        let foundAtPosition = false;
-        if (i < originalWordsLower.length && originalWordsLower[i] === revWordLower) {
-            foundAtPosition = true;
-        }
-        
-        // If not at same position, check if it exists elsewhere nearby
-        if (!foundAtPosition) {
-            let foundNearby = false;
-            const searchRange = 3;
-            const start = Math.max(0, i - searchRange);
-            const end = Math.min(originalWordsLower.length, i + searchRange + 1);
-            
-            for (let j = start; j < end; j++) {
-                if (originalWordsLower[j] === revWordLower) {
-                    foundNearby = true;
-                    break;
-                }
-            }
-            
-            // If word doesn't exist nearby or is in different position, highlight it
-            if (!foundNearby || !foundAtPosition) {
-                wordsToHighlight.push({
-                    word: revWord,
-                    wordLower: revWordLower,
-                    index: i
-                });
-            }
-        }
-    }
-    
-    // Also check for completely new words
     const originalWordsSet = new Set(originalWordsLower);
+    
     for (let i = 0; i < revisedWords.length; i++) {
-        const revWordLower = revisedWords[i].toLowerCase();
-        if (!originalWordsSet.has(revWordLower) && revWordLower.length > 1) {
-            // Check if not already in wordsToHighlight
-            const alreadyAdded = wordsToHighlight.some(w => w.index === i);
-            if (!alreadyAdded) {
-                wordsToHighlight.push({
-                    word: revisedWords[i],
-                    wordLower: revWordLower,
-                    index: i
-                });
-            }
+        const word = revisedWords[i];
+        const wordLower = revisedWordsLower[i];
+        
+        // Only highlight if:
+        // 1. Word doesn't exist in original at all (completely new)
+        // 2. Word is at least 3 characters (avoid highlighting short words/letters)
+        if (!originalWordsSet.has(wordLower) && word.length >= 3) {
+            wordsToHighlight.push({
+                word: word,
+                wordLower: wordLower,
+                index: i
+            });
         }
     }
     
-    if (wordsToHighlight.length === 0) return formatted;
+    if (wordsToHighlight.length === 0) {
+        // No significant differences found
+        return formatted;
+    }
     
-    // Sort by index descending to apply highlights from end to start
-    wordsToHighlight.sort((a, b) => b.index - a.index);
+    // Group consecutive words to highlight together
+    const sequences = [];
+    let currentSeq = [];
     
-    // Extract text content for matching (without HTML tags)
-    const textContent = formatted.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
-    
-    // Apply highlights - use a simpler approach: find and replace in formatted text
-    for (const { word, wordLower } of wordsToHighlight) {
-        // Find the word in the text content
-        let searchIndex = 0;
-        const positions = [];
-        
-        while (true) {
-            const index = textContent.indexOf(wordLower, searchIndex);
-            if (index === -1) break;
-            
-            // Check word boundaries
-            const before = index > 0 ? textContent[index - 1] : ' ';
-            const after = index + wordLower.length < textContent.length ? textContent[index + wordLower.length] : ' ';
-            if ((/\s/.test(before) || /[^\w]/.test(before)) && (/\s/.test(after) || /[^\w]/.test(after))) {
-                positions.push(index);
+    for (let i = 0; i < wordsToHighlight.length; i++) {
+        const item = wordsToHighlight[i];
+        if (currentSeq.length === 0 || item.index === currentSeq[currentSeq.length - 1].index + 1) {
+            // Consecutive - add to current sequence
+            currentSeq.push(item);
+        } else {
+            // Gap - save current sequence and start new one
+            if (currentSeq.length > 0) {
+                sequences.push(currentSeq.map(s => s.word).join(' '));
             }
-            searchIndex = index + 1;
+            currentSeq = [item];
+        }
+    }
+    if (currentSeq.length > 0) {
+        sequences.push(currentSeq.map(s => s.word).join(' '));
+    }
+    
+    // Highlight words using a simpler, more reliable approach
+    // Process words in reverse order to avoid position shifting
+    for (let wordIdx = wordsToHighlight.length - 1; wordIdx >= 0; wordIdx--) {
+        const wordInfo = wordsToHighlight[wordIdx];
+        const word = wordInfo.word;
+        
+        // Escape special regex characters in the word
+        const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        
+        // Build a regex that matches the word with proper boundaries
+        // Whitespace can be: actual space, nbsp, or whitespace symbols (·, °, →, ↵)
+        // Word boundaries: start/end of string, whitespace, whitespace symbols, or punctuation
+        const boundaryChars = `[\\s·°→↵,;:.!?()\\[\\]{}'"«»<>]`;
+        const wordPattern = new RegExp(
+            `(^|${boundaryChars})(${escapedWord})(${boundaryChars}|$)`,
+            'i' // Case insensitive
+        );
+        
+        // Extract text content only (without HTML tags) for pattern matching
+        let textContent = '';
+        let textToHtmlMap = []; // Maps text content index to HTML index
+        let inTag = false;
+        
+        for (let i = 0; i < formatted.length; i++) {
+            if (formatted[i] === '<') {
+                inTag = true;
+            } else if (formatted[i] === '>') {
+                inTag = false;
+            } else if (!inTag) {
+                textToHtmlMap.push(i);
+                textContent += formatted[i];
+            }
         }
         
-        // Apply highlights from end to start
-        for (let posIdx = positions.length - 1; posIdx >= 0; posIdx--) {
-            const textPos = positions[posIdx];
+        // Find the word in the text content
+        const match = textContent.match(wordPattern);
+        
+        if (match) {
+            // Calculate positions in text content
+            const matchStart = match.index + match[1].length;
+            const matchEnd = matchStart + match[2].length;
             
-            // Find corresponding position in formatted HTML by counting characters
-            let charCount = 0;
-            let startPos = -1;
-            let endPos = -1;
-            
-            for (let i = 0; i < formatted.length; i++) {
-                if (formatted[i] === '<') {
-                    // Skip HTML tags
-                    const tagEnd = formatted.indexOf('>', i);
-                    if (tagEnd !== -1) {
-                        i = tagEnd;
-                        continue;
-                    }
-                } else {
-                    if (charCount === textPos && startPos === -1) {
-                        startPos = i;
-                    }
-                    if (startPos !== -1 && charCount < textPos + word.length) {
-                        endPos = i + 1;
-                    }
-                    charCount++;
-                }
-            }
-            
-            if (startPos !== -1 && endPos !== -1) {
+            // Map back to HTML positions
+            if (matchStart < textToHtmlMap.length && matchEnd <= textToHtmlMap.length) {
+                const htmlStart = textToHtmlMap[matchStart];
+                const htmlEnd = textToHtmlMap[matchEnd - 1] + 1;
+                
                 // Check if already highlighted
-                const beforeText = formatted.substring(Math.max(0, startPos - 50), startPos);
-                if (!beforeText.includes('diff-added')) {
-                    const matchText = formatted.substring(startPos, endPos);
-                    // Don't highlight if it's already inside a diff span
-                    if (!matchText.includes('diff-added') && !matchText.includes('<span')) {
-                        formatted = formatted.substring(0, startPos) + 
-                            `<span class="diff-added">${matchText}</span>` + 
-                            formatted.substring(endPos);
+                const beforeText = formatted.substring(0, htmlStart);
+                const openSpans = (beforeText.match(/<span[^>]*class=["']diff-added["'][^>]*>/g) || []).length;
+                const closeSpans = (beforeText.match(/<\/span>/g) || []).length;
+                
+                if (openSpans === closeSpans) { // Not inside a highlight
+                    const matchText = formatted.substring(htmlStart, htmlEnd);
+                    
+                    // Verify not already highlighted
+                    if (!matchText.includes('diff-added')) {
+                        formatted = formatted.substring(0, htmlStart) +
+                            `<span class="diff-added">${matchText}</span>` +
+                            formatted.substring(htmlEnd);
                     }
                 }
             }
@@ -901,6 +956,14 @@ function editRevision(button) {
 
     if (!textDiv || !textarea) return;
 
+    // Always get the raw text from original source (with NBSP), not from textarea.value
+    // which might already have ° symbols
+    const originalB64 = textarea.getAttribute('data-original-b64');
+    const savedText = localStorage.getItem('revision_' + matecatId);
+    const rawText = savedText || (originalB64 ? base64ToUtf8(originalB64) : '');
+    // Show non-breaking spaces as ° in textarea
+    textarea.value = showNonBreakingSpaces(rawText);
+
     textDiv.classList.add('editing');
     textarea.classList.add('editing');
     editButton.style.display = 'none';
@@ -923,7 +986,8 @@ function saveRevision(button) {
 
     if (!textDiv || !textarea) return;
 
-    const newText = textarea.value;
+    // Convert ° back to non-breaking space before saving
+    const newText = restoreNonBreakingSpaces(textarea.value);
     
     // Check if it's an AI revision or XLF revision
     const isAiRevision = matecatId.includes('-ai');
@@ -940,13 +1004,8 @@ function saveRevision(button) {
         }
     }
     
-    // Highlight differences if we have original target
-    let formattedText;
-    if (originalTarget && (isAiRevision || isXlfRevision)) {
-        formattedText = highlightDifferences(originalTarget, newText);
-    } else {
-        formattedText = formatTextWithTags(newText);
-    }
+    // Format text (no highlighting, but shows ° for non-breaking spaces)
+    const formattedText = formatTextWithTags(newText);
     
     const badgeHtml = isAiRevision ? '<span class="ai-badge">AI</span>' : '';
     textDiv.innerHTML = formattedText + badgeHtml + '<span class="edited-badge">EDITED</span>';
@@ -989,14 +1048,18 @@ function cancelEdit(button) {
 
     const originalB64 = textarea.getAttribute('data-original-b64');
     const savedText = localStorage.getItem('revision_' + matecatId);
-    const textToShow = savedText || atob(originalB64);
+    // Get raw text (with NBSP) - this is what we store and compare
+    // Use base64ToUtf8 to properly handle UTF-8 characters like smart quotes
+    const rawText = savedText || (originalB64 ? base64ToUtf8(originalB64) : '');
+    // Show non-breaking spaces as ° in textarea only
+    const textToShowInTextarea = showNonBreakingSpaces(rawText);
 
     const badge = document.getElementById('badge-' + matecatId);
     const isAiRevision = matecatId.includes('-ai');
     const isXlfRevision = matecatId.includes('-xlf');
     const badgeHtml = isAiRevision ? '<span class="ai-badge">AI</span>' : '';
     
-    // Get the original target for comparison
+    // Get the original target for comparison (use raw text with NBSP)
     let originalTarget = '';
     const baseMatecatId = matecatId.replace(/-ai$/, '').replace(/-xlf$/, '');
     const row = document.querySelector(`tr[data-matecat-id="${baseMatecatId}"]`);
@@ -1007,13 +1070,8 @@ function cancelEdit(button) {
         }
     }
     
-    // Highlight differences if we have original target
-    let formattedText;
-    if (originalTarget && (isAiRevision || isXlfRevision)) {
-        formattedText = highlightDifferences(originalTarget, textToShow);
-    } else {
-        formattedText = formatTextWithTags(textToShow);
-    }
+    // Format text (no highlighting, but shows ° for non-breaking spaces)
+    const formattedText = formatTextWithTags(rawText);
     
     if (savedText && badge) {
         textDiv.innerHTML = formattedText + badgeHtml + '<span class="edited-badge">EDITED</span>';
@@ -1023,7 +1081,8 @@ function cancelEdit(button) {
         if (badge) badge.style.display = 'none';
     }
 
-    textarea.value = textToShow;
+    // Only textarea needs the ° symbols
+    textarea.value = textToShowInTextarea;
     textDiv.classList.remove('editing');
     textarea.classList.remove('editing');
     editButton.style.display = 'inline-flex';
@@ -1077,37 +1136,48 @@ function renderTable(rows, containerId) {
     `;
 
     const filtersHtml = `
-        <div class="filter-controls">
-            <div class="filter-group">
-                <label for="codeFilter">Filter by Code</label>
-                <select id="codeFilter" onchange="filterTable()">
-                    <option value="">All Codes</option>
-                    <option value="TE-2">TE-2 (Major Translation Error)</option>
-                    <option value="TE-0.5">TE-0.5 (Minor Translation Error)</option>
-                    <option value="TC-0.5">TC-0.5 (Terminology/Consistency)</option>
-                    <option value="LQ-0.5">LQ-0.5 (Language Quality)</option>
-                    <option value="ST-0.5">ST-0.5 (Style)</option>
-                </select>
+        <div class="filters">
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label for="codeFilter">Error Code</label>
+                    <select id="codeFilter" onchange="filterTable()">
+                        <option value="">All Codes</option>
+                        <option value="TE-2">TE-2 (Major Error)</option>
+                        <option value="TE-0.5">TE-0.5 (Minor Error)</option>
+                        <option value="TC-0.5">TC-0.5 (Terminology)</option>
+                        <option value="LQ-0.5">LQ-0.5 (Language Quality)</option>
+                        <option value="ST-0.5">ST-0.5 (Style)</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="stateFilter">State</label>
+                    <select id="stateFilter" onchange="filterTable()">
+                        <option value="">All States</option>
+                        <option value="translated">Translated</option>
+                        <option value="reviewed">Reviewed</option>
+                        <option value="final">Final</option>
+                        <option value="draft">Draft</option>
+                        <option value="new">New</option>
+                    </select>
+                </div>
+                <div class="id-range-group">
+                    <div class="filter-group">
+                        <label for="idRangeMin">ID Min</label>
+                        <input type="number" id="idRangeMin" placeholder="e.g. 100" oninput="filterTable()">
+                    </div>
+                    <div class="filter-group">
+                        <label for="idRangeMax">ID Max</label>
+                        <input type="number" id="idRangeMax" placeholder="e.g. 500" oninput="filterTable()">
+                    </div>
+                </div>
             </div>
-            <div class="filter-group">
-                <label for="stateFilter">Filter by State</label>
-                <select id="stateFilter" onchange="filterTable()">
-                    <option value="">All States</option>
-                    <option value="translated">Translated</option>
-                    <option value="reviewed">Reviewed</option>
-                    <option value="final">Final</option>
-                    <option value="draft">Draft</option>
-                    <option value="new">New</option>
-                </select>
-            </div>
-            <div class="filter-group id-range-group">
-                <label>ID Range</label>
-                <input type="number" id="idRangeMin" placeholder="Min (e.g. 4778127503)" oninput="filterTable()">
-                <input type="number" id="idRangeMax" placeholder="Max (e.g. 4778127875)" oninput="filterTable()">
-            </div>
-            <div class="filter-group">
-                <label for="searchBox">Search</label>
-                <input type="text" id="searchBox" placeholder="Search in source, target, or revision..." oninput="filterTable()">
+            <div class="search-container">
+                <div class="search-wrapper">
+                    <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Search in source, target, or revision..." oninput="filterTable()">
+                </div>
             </div>
         </div>
     `;
@@ -1168,11 +1238,11 @@ function renderTable(rows, containerId) {
         let newTargetDisplay = '<em>No revision</em>';
         if (newTargetRaw) {
             const newTargetB64 = btoa(unescape(encodeURIComponent(newTargetRaw)));
-            const newTargetWithDiff = highlightDifferences(targetRaw, newTargetRaw);
+            const newTargetFormatted = formatTextWithTags(newTargetRaw);
             newTargetDisplay = `
                 <div class="has-revision xlf-revision" data-matecat-id="${matecatId}-xlf">
-                    <div class="revision-text" id="text-${matecatId}-xlf">${newTargetWithDiff}<span class="edited-badge" id="badge-${matecatId}-xlf" style="display: none;">EDITED</span></div>
-                    <textarea class="revision-textarea" id="textarea-${matecatId}-xlf" data-original-b64="${newTargetB64}">${escapeHtml(newTargetRaw)}</textarea>
+                    <div class="revision-text" id="text-${matecatId}-xlf">${newTargetFormatted}<span class="edited-badge" id="badge-${matecatId}-xlf" style="display: none;">EDITED</span></div>
+                    <textarea class="revision-textarea" id="textarea-${matecatId}-xlf" data-original-b64="${newTargetB64}">${escapeHtml(showNonBreakingSpaces(newTargetRaw))}</textarea>
                     <div class="button-group">
                         <button class="copy-button" data-text-b64="${newTargetB64}" data-matecat-id="${matecatId}-xlf" onclick="copyToClipboard(this)" title="Copy revision">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1206,7 +1276,9 @@ function renderTable(rows, containerId) {
         let aiRevisionDisplay = '<em>No AI revision</em>';
         if (aiRevisionRaw) {
             const aiRevisionB64 = btoa(unescape(encodeURIComponent(aiRevisionRaw)));
-            const aiRevisionWithDiff = highlightDifferences(targetRaw, aiRevisionRaw);
+            // Use highlightDifferences with whitespace visualization for AI Revision
+            // This shows differences from target AND visualizes all whitespace characters
+            const aiRevisionFormatted = highlightDifferences(targetRaw, aiRevisionRaw, true);
 
             let confidenceBadge = '';
             if (confidenceScore) {
@@ -1216,8 +1288,8 @@ function renderTable(rows, containerId) {
 
             aiRevisionDisplay = `
                 <div class="has-revision ai-revision" data-matecat-id="${matecatId}-ai">
-                    <div class="revision-text" id="text-${matecatId}-ai">${aiRevisionWithDiff}<span class="ai-badge">AI</span>${confidenceBadge}<span class="edited-badge" id="badge-${matecatId}-ai" style="display: none;">EDITED</span></div>
-                    <textarea class="revision-textarea" id="textarea-${matecatId}-ai" data-original-b64="${aiRevisionB64}">${escapeHtml(aiRevisionRaw)}</textarea>
+                    <div class="revision-text" id="text-${matecatId}-ai">${aiRevisionFormatted}<span class="ai-badge">AI</span>${confidenceBadge}<span class="edited-badge" id="badge-${matecatId}-ai" style="display: none;">EDITED</span></div>
+                    <textarea class="revision-textarea" id="textarea-${matecatId}-ai" data-original-b64="${aiRevisionB64}">${escapeHtml(showNonBreakingSpaces(aiRevisionRaw))}</textarea>
                     <div class="button-group">
                         <button class="copy-button" data-text-b64="${aiRevisionB64}" data-matecat-id="${matecatId}-ai" onclick="copyToClipboard(this)" title="Copy AI revision">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1326,7 +1398,7 @@ function filterTable() {
     const stateFilter = document.getElementById('stateFilter')?.value || '';
     const idRangeMin = document.getElementById('idRangeMin')?.value;
     const idRangeMax = document.getElementById('idRangeMax')?.value;
-    const searchText = (document.getElementById('searchBox')?.value || '').toLowerCase();
+    const searchText = (document.getElementById('searchInput')?.value || '').toLowerCase();
     const activeStatFilter = window.activeStatFilter || '';
     const table = document.getElementById('revisionTable');
     if (!table) return;
@@ -1406,7 +1478,8 @@ function loadSavedEdits() {
                 if (textDiv && textarea && badge && copyButton) {
                     const formattedText = formatTextWithTags(savedText);
                     textDiv.innerHTML = formattedText + '<span class="edited-badge">EDITED</span>';
-                    textarea.value = savedText;
+                    // Show non-breaking spaces as ° in textarea
+                    textarea.value = showNonBreakingSpaces(savedText);
                     badge.style.display = 'inline-block';
                     const editedB64 = btoa(unescape(encodeURIComponent(savedText)));
                     copyButton.setAttribute('data-text-b64', editedB64);
@@ -1452,8 +1525,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keydown', function (e) {
         if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
             e.preventDefault();
-            const searchBox = document.getElementById('searchBox');
-            if (searchBox) searchBox.focus();
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) searchInput.focus();
         }
     });
 });
