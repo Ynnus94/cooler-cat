@@ -214,13 +214,15 @@ body {
     border-radius: 4px;
 }
 
-/* Buttons - Notion Style */
+/* Buttons - Perfect Icons & Spacing */
 .btn {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 8px 12px;
-    border-radius: var(--radius-sm);
+    justify-content: center;
+    gap: 8px;
+    height: 36px;
+    padding: 0 16px;
+    border-radius: var(--radius-md);
     font-size: 14px;
     font-weight: 500;
     font-family: var(--font-sans);
@@ -228,11 +230,13 @@ body {
     border: none;
     transition: all var(--transition);
     white-space: nowrap;
+    line-height: 1;
 }
 
 .btn svg {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
 }
 
 .btn-primary {
@@ -339,85 +343,94 @@ body {
     color: var(--text-secondary);
 }
 
-/* Table Header Controls */
+/* Table Header Controls - Perfect Alignment */
 .table-header-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
-    padding: 12px;
-    background: var(--bg-hover);
-    border-radius: var(--radius-md);
+    margin-bottom: 28px;
+    padding: 16px 20px;
+    background: var(--bg-surface);
+    border-radius: var(--radius-lg);
     border: 1px solid var(--border);
-    gap: 12px;
+    gap: 20px;
     flex-wrap: wrap;
 }
 
 .table-header-left {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .table-header-label {
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 12px;
+    font-weight: 600;
     color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .table-header-select {
-    padding: 6px 10px;
+    height: 36px;
+    padding: 0 12px;
     border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md);
     background: var(--bg-surface);
     color: var(--text-primary);
-    font-size: 13px;
+    font-size: 14px;
     font-family: var(--font-sans);
     cursor: pointer;
     transition: all var(--transition);
-    min-width: 180px;
+    min-width: 200px;
+    line-height: 36px;
 }
 
 .table-header-select:hover {
     background: var(--bg-hover);
+    border-color: var(--border-hover);
 }
 
 .table-header-select:focus {
     outline: none;
     border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
 }
 
 .table-header-right {
     display: flex;
-    gap: 8px;
+    gap: 10px;
     flex-wrap: wrap;
 }
 
-/* Statistics - Simple Cards */
+/* Statistics - Perfect Spacing */
 .stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 12px;
-    margin-bottom: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
 }
 
 .stat-box {
     background: var(--bg-surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    padding: 16px;
+    padding: 20px;
     transition: all var(--transition);
     cursor: pointer;
+    position: relative;
 }
 
 .stat-box:hover {
     background: var(--bg-hover);
     box-shadow: var(--shadow);
+    transform: translateY(-1px);
 }
 
 .stat-box.active {
     border-color: var(--primary);
     background: var(--primary-light);
+    box-shadow: var(--shadow);
 }
 
 .stat-box.ai-revisions {
@@ -441,56 +454,59 @@ body {
 }
 
 .stat-box h3 {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 700;
     color: var(--text-primary);
-    margin-bottom: 4px;
+    margin-bottom: 6px;
     font-family: var(--font-mono);
+    line-height: 1;
 }
 
 .stat-box p {
     font-size: 12px;
     color: var(--text-secondary);
     font-weight: 500;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
 }
 
-/* Filters - Spacious & Well-organized */
+/* Filters - Perfect Spacing & Alignment */
 .filters {
-    margin-bottom: 24px;
+    margin-bottom: 28px;
 }
 
 .filters-row {
     display: flex;
-    gap: 16px;
+    gap: 20px;
     flex-wrap: wrap;
     align-items: flex-end;
-    padding: 20px;
+    padding: 24px;
     background: var(--bg-surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    margin-bottom: 16px;
 }
 
 .filter-group {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    min-width: 180px;
+    gap: 10px;
+    min-width: 200px;
     flex: 1;
 }
 
 .filter-group label {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--text-secondary);
     text-transform: uppercase;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.05em;
+    line-height: 1;
 }
 
 .filter-group select,
 .filter-group input {
-    padding: 10px 14px;
+    height: 40px;
+    padding: 0 14px;
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     background: var(--bg-surface);
@@ -498,44 +514,43 @@ body {
     font-size: 14px;
     font-family: var(--font-sans);
     transition: all var(--transition);
+    line-height: 40px;
 }
 
 .filter-group select:hover,
 .filter-group input:hover {
     border-color: var(--border-hover);
+    background: var(--bg-hover);
 }
 
 .filter-group select:focus,
 .filter-group input:focus {
     outline: none;
     border-color: var(--primary);
+    background: var(--bg-surface);
     box-shadow: 0 0 0 3px var(--primary-light);
 }
 
 .id-range-group {
     display: flex;
-    gap: 10px;
+    gap: 12px;
     align-items: flex-end;
 }
 
 .id-range-group .filter-group {
-    min-width: 100px;
-    flex: 0;
+    min-width: 120px;
+    flex: 0 1 auto;
 }
 
-.id-range-group input {
-    width: 100px;
-}
-
-/* Search Bar - Prominent & Separated */
+/* Search Bar - Clean & Spacious */
 .search-container {
-    padding: 0 20px 20px 20px;
+    padding: 24px;
+    padding-top: 0;
     background: var(--bg-surface);
     border: 1px solid var(--border);
-    border-top: none;
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-    margin-top: -16px;
-    margin-bottom: 24px;
+    border-top: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-top: 16px;
 }
 
 .search-wrapper {
@@ -545,25 +560,28 @@ body {
 
 .search-icon {
     position: absolute;
-    left: 14px;
+    left: 16px;
     top: 50%;
     transform: translateY(-50%);
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     color: var(--text-tertiary);
     pointer-events: none;
+    stroke-width: 2;
 }
 
 #searchInput {
     width: 100%;
-    padding: 12px 16px 12px 44px;
+    height: 44px;
+    padding: 0 16px 0 48px;
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     background: var(--bg-hover);
     color: var(--text-primary);
-    font-size: 14px;
+    font-size: 15px;
     font-family: var(--font-sans);
     transition: all var(--transition);
+    line-height: 44px;
 }
 
 #searchInput::placeholder {
@@ -582,11 +600,12 @@ body {
     box-shadow: 0 0 0 3px var(--primary-light);
 }
 
-/* Table - Clean & Readable */
+/* Table - Perfect Spacing */
 .table-wrapper {
     overflow-x: auto;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     border: 1px solid var(--border);
+    background: var(--bg-surface);
 }
 
 table {
@@ -598,17 +617,18 @@ table {
 th {
     background: var(--bg-hover);
     color: var(--text-secondary);
-    padding: 10px 12px;
+    padding: 12px 16px;
     text-align: left;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.05em;
     position: sticky;
     top: 0;
     z-index: 10;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 2px solid var(--border);
     white-space: nowrap;
+    line-height: 1.4;
 }
 
 th.ai-revision-header {
@@ -617,10 +637,11 @@ th.ai-revision-header {
 }
 
 td {
-    padding: 12px;
+    padding: 14px 16px;
     border-bottom: 1px solid var(--border);
     vertical-align: top;
     color: var(--text-primary);
+    line-height: 1.6;
 }
 
 tr:hover td {
@@ -629,6 +650,10 @@ tr:hover td {
 
 tr.has-revision[data-has-ai-revision="true"] {
     background: var(--ai-light);
+}
+
+tr:last-child td {
+    border-bottom: none;
 }
 
 /* Revision Cells */
@@ -760,11 +785,11 @@ tr.has-revision[data-has-ai-revision="true"] {
     margin-left: 6px;
 }
 
-/* Button Groups in Cells */
+/* Button Groups in Cells - Perfect Icons */
 .button-group {
     display: flex;
-    gap: 6px;
-    margin-top: 10px;
+    gap: 8px;
+    margin-top: 12px;
     flex-wrap: wrap;
 }
 
@@ -774,9 +799,11 @@ tr.has-revision[data-has-ai-revision="true"] {
 .cancel-button {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 5px 9px;
-    border-radius: var(--radius-sm);
+    justify-content: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 10px;
+    border-radius: var(--radius-md);
     font-size: 12px;
     font-weight: 500;
     cursor: pointer;
@@ -784,14 +811,17 @@ tr.has-revision[data-has-ai-revision="true"] {
     background: var(--bg-surface);
     color: var(--text-primary);
     transition: all var(--transition);
+    line-height: 1;
 }
 
 .copy-button svg,
 .edit-button svg,
 .save-button svg,
 .cancel-button svg {
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    stroke-width: 2;
 }
 
 .copy-button:hover {

@@ -111,12 +111,13 @@ Target (French): "{target}"
 
 CRITICAL INSTRUCTIONS:
 1. Compare the French translation against the English source.
-2. ONLY flag translations that have EXPLICIT errors defined in the Knowledge Base error codes.
-3. If you find an error, you MUST:
+2. **MANDATORY GLOSSARY CHECK**: Identify ALL terms in the source text that might be in the Notion Glossary. For EACH term found in the glossary, verify the French translation matches the official fr_FR entry exactly. If ANY glossary term is translated incorrectly, assign TC-0.5 error code.
+3. ONLY flag translations that have EXPLICIT errors defined in the Knowledge Base error codes.
+4. If you find an error, you MUST:
    - Provide a CORRECTED translation in "revised_text"
    - Assign appropriate error code(s): TE-2, TE-0.5, TC-0.5, LQ-0.5, or ST-0.5
-   - Explain the error briefly
-4. If the translation is acceptable with no documented errors:
+   - Explain the error briefly, including which glossary term was wrong if applicable
+5. If the translation is acceptable with no documented errors:
    - Return the ORIGINAL translation unchanged in "revised_text"
    - Return empty error_codes array []
    - Set comment to null
@@ -124,9 +125,14 @@ CRITICAL INSTRUCTIONS:
 ERROR CODE REFERENCE:
 - TE-2: Major translation error (meaning changed, negation missing, critical omission)
 - TE-0.5: Minor translation error (small grammar issue, minor omission)
-- TC-0.5: Terminology/consistency violation (wrong term from glossary)
+- TC-0.5: Terminology/consistency violation (wrong term from glossary) - **USE THIS for ANY glossary term mismatch**
 - LQ-0.5: Language quality (punctuation, spelling, grammar)
 - ST-0.5: Style violation (wrong tone, unidiomatic)
+
+GLOSSARY VALIDATION:
+- Check ALL terms against the Notion Glossary: https://notion.notion.site/Notion-Glossary-3a85fe79a5a147c0b6d7ebd55f06ae36
+- Common terms to check: standup, Chat, Marketplace, guests, Seats, Hub, plan, audit log, teamspace, @-mentions, slash commands (/summary, /code, etc.)
+- If a term from the glossary is used incorrectly, it's ALWAYS a TC-0.5 error.
 
 OUTPUT FORMAT (JSON ONLY, NO MARKDOWN):
 {{

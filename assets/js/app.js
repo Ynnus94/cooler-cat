@@ -1136,48 +1136,46 @@ function renderTable(rows, containerId) {
     `;
 
     const filtersHtml = `
-        <div class="filters">
-            <div class="filters-row">
+        <div class="filters-row">
+            <div class="filter-group">
+                <label for="codeFilter">Error Code</label>
+                <select id="codeFilter" onchange="filterTable()">
+                    <option value="">All Codes</option>
+                    <option value="TE-2">TE-2 (Major Error)</option>
+                    <option value="TE-0.5">TE-0.5 (Minor Error)</option>
+                    <option value="TC-0.5">TC-0.5 (Terminology)</option>
+                    <option value="LQ-0.5">LQ-0.5 (Language Quality)</option>
+                    <option value="ST-0.5">ST-0.5 (Style)</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="stateFilter">State</label>
+                <select id="stateFilter" onchange="filterTable()">
+                    <option value="">All States</option>
+                    <option value="translated">Translated</option>
+                    <option value="reviewed">Reviewed</option>
+                    <option value="final">Final</option>
+                    <option value="draft">Draft</option>
+                    <option value="new">New</option>
+                </select>
+            </div>
+            <div class="id-range-group">
                 <div class="filter-group">
-                    <label for="codeFilter">Error Code</label>
-                    <select id="codeFilter" onchange="filterTable()">
-                        <option value="">All Codes</option>
-                        <option value="TE-2">TE-2 (Major Error)</option>
-                        <option value="TE-0.5">TE-0.5 (Minor Error)</option>
-                        <option value="TC-0.5">TC-0.5 (Terminology)</option>
-                        <option value="LQ-0.5">LQ-0.5 (Language Quality)</option>
-                        <option value="ST-0.5">ST-0.5 (Style)</option>
-                    </select>
+                    <label for="idRangeMin">ID Min</label>
+                    <input type="number" id="idRangeMin" placeholder="e.g. 100" oninput="filterTable()">
                 </div>
                 <div class="filter-group">
-                    <label for="stateFilter">State</label>
-                    <select id="stateFilter" onchange="filterTable()">
-                        <option value="">All States</option>
-                        <option value="translated">Translated</option>
-                        <option value="reviewed">Reviewed</option>
-                        <option value="final">Final</option>
-                        <option value="draft">Draft</option>
-                        <option value="new">New</option>
-                    </select>
-                </div>
-                <div class="id-range-group">
-                    <div class="filter-group">
-                        <label for="idRangeMin">ID Min</label>
-                        <input type="number" id="idRangeMin" placeholder="e.g. 100" oninput="filterTable()">
-                    </div>
-                    <div class="filter-group">
-                        <label for="idRangeMax">ID Max</label>
-                        <input type="number" id="idRangeMax" placeholder="e.g. 500" oninput="filterTable()">
-                    </div>
+                    <label for="idRangeMax">ID Max</label>
+                    <input type="number" id="idRangeMax" placeholder="e.g. 500" oninput="filterTable()">
                 </div>
             </div>
-            <div class="search-container">
-                <div class="search-wrapper">
-                    <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                    <input type="text" id="searchInput" placeholder="Search in source, target, or revision..." oninput="filterTable()">
-                </div>
+        </div>
+        <div class="search-container">
+            <div class="search-wrapper">
+                <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input type="text" id="searchInput" placeholder="Search in source, target, or revision..." oninput="filterTable()">
             </div>
         </div>
     `;
