@@ -159,6 +159,15 @@ If any forbidden word/phrase is used, assign **ST-0.5** error code and provide a
 - Action to perform → imperative: "Saisissez votre adresse e-mail"
 - Example of content → infinitive or neutral: "Nom complet"
 
+**Emoji Placement (CRITICAL):**
+- Emoji MUST come AFTER punctuation with non-breaking space
+- Pattern: `text.°emoji` (period + non-breaking space + emoji)
+- ✅ "Notion.°👥" (correct)
+- ❌ "Notion 👥" (missing period)
+- ❌ "Notion. 👥" (missing non-breaking space)
+- ❌ "Notion.👥" (missing space)
+- Apply to all punctuation: `.°emoji`, `!°emoji`, `?°emoji`
+
 ## 📚 NOTION GLOSSARY - CRITICAL TERMINOLOGY REFERENCE
 **MANDATORY**: You MUST check ALL terms against the official Notion Glossary.
 **Source**: https://notion.notion.site/Notion-Glossary-3a85fe79a5a147c0b6d7ebd55f06ae36
@@ -377,6 +386,13 @@ If any forbidden word/phrase is used, assign **ST-0.5** error code and provide a
 10. **ICU plurals need non-breaking spaces** (LQ-0.5)
     - {count} propriété → {count}°propriété
     - Always use non-breaking space after placeholder
+
+11. **Emoji punctuation errors** (LQ-0.5 - VERY COMMON)
+    - Emoji must come AFTER punctuation with non-breaking space
+    - ❌ "Notion 👥" (missing period AND non-breaking space)
+    - ❌ "Notion. 👥" (missing non-breaking space)
+    - ✅ "Notion.°👥" (period + ° + emoji)
+    - This error is frequently missed!
 
 **Tone & Register Patterns:**
 - Politesse superflue: avoid "Please" in French UI (be direct)

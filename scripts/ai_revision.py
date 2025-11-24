@@ -137,7 +137,11 @@ CRITICAL INSTRUCTIONS - MULTI-PASS REVIEW:
    - Space BEFORE: : ; ! ? »
    - Space AFTER: «
    - NO space before: , .
-   - Wrong spacing = LQ-0.5
+   - **EMOJI PLACEMENT (CRITICAL)**: Emoji MUST come AFTER punctuation with non-breaking space
+     Example: "Notion." + emoji → "Notion.°👥" (period + ° + emoji)
+     ❌ "Notion 👥" (missing period)
+     ❌ "Notion. 👥" (missing non-breaking space)
+   - Wrong spacing/emoji = LQ-0.5
 
 5. **TYPOS & SPELLING** (LQ-0.5):
    - Check every word for spelling errors
@@ -273,12 +277,17 @@ Source: "Upload your file"
 Target: "Téléchargez votre fichier"
 Output: {{"revised_text": "Chargez votre fichier", "error_codes": ["TC-0.5"], "comment": "Common error (per Glossary): 'upload' → 'charger' (NOT 'télécharger' which means 'download')", "confidence_score": 100}}
 
-Example 11 - Tiret cadratin forbidden (LQ-0.5):
+Example 11 - Emoji punctuation error (LQ-0.5):
+Source: "View members in your workspace 👥"
+Target: "Consultez les membres de votre espace de travail Notion 👥"
+Output: {{"revised_text": "Consultez les membres de votre espace de travail Notion.°👥", "error_codes": ["LQ-0.5"], "comment": "Missing period and non-breaking space before emoji (per Style Guide): must be 'Notion.°👥' (period + ° + emoji)", "confidence_score": 100}}
+
+Example 12 - Tiret cadratin forbidden (LQ-0.5):
 Source: "It's simple — just click here"
 Target: "C'est simple — cliquez simplement ici"
 Output: {{"revised_text": "C'est simple : cliquez simplement ici", "error_codes": ["LQ-0.5"], "comment": "Tiret cadratin (—) forbidden in French UI (per Style Guide) → use colon (:)", "confidence_score": 100}}
 
-Example 12 - No errors:
+Example 13 - No errors:
 Source: "Hello world"
 Target: "Bonjour le monde"
 Output: {{"revised_text": "Bonjour le monde", "error_codes": [], "comment": null, "confidence_score": 100}}
