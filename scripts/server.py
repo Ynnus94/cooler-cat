@@ -423,6 +423,7 @@ if __name__ == '__main__':
     print("🚀 Starting CoolerCat Translation Server...")
     print(f"📁 Jobs directory: {JOBS_DIR}")
     print(f"🌐 Server running at http://localhost:5001")
+    print(f"🏠 Network access at http://10.0.0.146:5001")
     print("\nPress Ctrl+C to stop the server")
-    app.run(debug=True, port=5001)
+    app.run(debug=True, host='0.0.0.0', port=5001)
 

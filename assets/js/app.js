@@ -1,8 +1,10 @@
 /* CoolerCat Application Logic */
 
-const API_BASE = 'http://localhost:5001/api';
+// Automatically detect the correct API base URL (works for localhost and network access)
+const API_BASE = `${window.location.protocol}//${window.location.hostname}:5001/api`;
 let currentJobId = null;
 let quoteInterval = null;
+let currentTableData = []; // Store current table data for export
 
 // --- Confetti Logic ---
 class Confetti {
@@ -1095,6 +1097,149 @@ function cancelEdit(button) {
     copyButton.style.display = 'inline-flex';
 }
 
+// --- CSV Export ---
+function exportToCSV() {
+    const table = document.getElementById('revisionTable');
+    if (!table) {
+        showCustomModal('Error', 'No table data available to export');
+        return;
+    }
+
+    // Get all visible rows (respecting current filters)
+    const rows = Array.from(table.querySelectorAll('tbody tr')).filter(row => {
+        return row.style.display !== 'none';
+    });
+
+    if (rows.length === 0) {
+        showCustomModal('No Data', 'No rows to export. Try adjusting your filters.');
+        return;
+    }
+
+    // Helper function to escape CSV fields
+    function escapeCSV(str) {
+        if (str === null || str === undefined) return '';
+        str = String(str);
+        // Remove HTML tags
+        str = str.replace(/<[^>]*>/g, '');
+        // Decode HTML entities
+        const textarea = document.createElement('textarea');
+        textarea.innerHTML = str;
+        str = textarea.value;
+        // Remove whitespace visualization symbols for cleaner CSV
+        str = str.replace(/·/g, ' ').replace(/°/g, '\u00A0').replace(/→/g, '\t').replace(/↵/g, '\n');
+        // Escape quotes and wrap in quotes if necessary
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+            str = '"' + str.replace(/"/g, '""') + '"';
+        }
+        return str;
+    }
+
+    // Build CSV content
+    const headers = ['ID Matecat', 'State', 'Source', 'Target', 'XLF Revision', 'AI Revision', 'Error Code', 'Comment'];
+    let csvContent = headers.map(escapeCSV).join(',') + '\n';
+
+    rows.forEach(row => {
+        const matecatId = row.querySelector('.id-col')?.textContent.replace(/✨ AI|📄 XLF/g, '').trim() || '';
+        const state = row.querySelector('.state-col')?.textContent.trim() || '';
+        
+        // Get source text
+        const sourceCell = row.querySelector('.source-col');
+        const source = sourceCell?.textContent.trim() || '';
+        
+        // Get target text (original)
+        const targetCell = row.querySelector('.target-col');
+        const target = targetCell?.getAttribute('data-raw-target') || targetCell?.textContent.trim() || '';
+        
+        // Get XLF revision (check for edited version first)
+        let xlfRevision = '';
+        const xlfTextDiv = row.querySelector('.xlf-revision-col .revision-text');
+        if (xlfTextDiv) {
+            const xlfMatecatId = matecatId + '-xlf';
+            const savedXlf = localStorage.getItem('revision_' + xlfMatecatId);
+            if (savedXlf) {
+                xlfRevision = savedXlf;
+            } else {
+                const xlfTextarea = row.querySelector('.xlf-revision-col .revision-textarea');
+                if (xlfTextarea) {
+                    const xlfB64 = xlfTextarea.getAttribute('data-original-b64');
+                    xlfRevision = xlfB64 ? base64ToUtf8(xlfB64) : '';
+                }
+            }
+        }
+        
+        // Get AI revision (check for edited version first)
+        let aiRevision = '';
+        const aiTextDiv = row.querySelector('.ai-revision-col .revision-text');
+        if (aiTextDiv) {
+            const aiMatecatId = matecatId + '-ai';
+            const savedAi = localStorage.getItem('revision_' + aiMatecatId);
+            if (savedAi) {
+                aiRevision = savedAi;
+            } else {
+                const aiTextarea = row.querySelector('.ai-revision-col .revision-textarea');
+                if (aiTextarea) {
+                    const aiB64 = aiTextarea.getAttribute('data-original-b64');
+                    aiRevision = aiB64 ? base64ToUtf8(aiB64) : '';
+                }
+            }
+        }
+        
+        // Get error code (codes are in spans with classes like code-TE2)
+        const codeCell = row.querySelector('.code-col');
+        let code = '';
+        if (codeCell) {
+            // Get all code spans and extract their text content
+            const codeSpans = codeCell.querySelectorAll('span[class^="code-"]');
+            if (codeSpans.length > 0) {
+                code = Array.from(codeSpans).map(span => span.textContent.trim()).join(', ');
+            }
+        }
+        
+        // Get comment (comment is in .comment-wrapper > div)
+        const commentCell = row.querySelector('.comment-col');
+        let comment = '';
+        if (commentCell) {
+            const commentWrapper = commentCell.querySelector('.comment-wrapper > div');
+            if (commentWrapper) {
+                comment = commentWrapper.textContent.trim();
+            }
+        }
+        
+        // Build row
+        const csvRow = [
+            matecatId,
+            state,
+            source,
+            target,
+            xlfRevision,
+            aiRevision,
+            code,
+            comment
+        ].map(escapeCSV).join(',');
+        
+        csvContent += csvRow + '\n';
+    });
+
+    // Create download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    // Generate filename with job name and timestamp
+    const jobName = currentJobId ? currentJobId.replace(/[^a-z0-9]/gi, '_') : 'export';
+    const timestamp = new Date().toISOString().split('T')[0];
+    const filename = `${jobName}_${timestamp}.csv`;
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showCustomModal('Export Successful', `Exported ${rows.length} row${rows.length !== 1 ? 's' : ''} to ${filename}`);
+}
+
 function getConfidenceColor(score) {
     score = parseInt(score) || 0;
     if (score >= 90) return '#10b981'; // Green
@@ -1106,6 +1251,9 @@ function getConfidenceColor(score) {
 function renderTable(rows, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
+
+    // Store rows for export functionality
+    currentTableData = rows;
 
     const total = rows.length;
     const withXlfRevisions = rows.filter(r => r['New target']?.trim()).length;

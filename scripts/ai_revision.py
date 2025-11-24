@@ -109,49 +109,73 @@ TASK:
 Source (English): "{source}"
 Target (French): "{target}"
 
-CRITICAL INSTRUCTIONS:
-1. Compare the French translation against the English source.
-2. **MANDATORY GLOSSARY CHECK**: Identify ALL terms in the source text that might be in the Notion Glossary. For EACH term found in the glossary, verify the French translation matches the official fr_FR entry exactly. If ANY glossary term is translated incorrectly, assign TC-0.5 error code.
-3. ONLY flag translations that have EXPLICIT errors defined in the Knowledge Base error codes.
-4. If you find an error, you MUST:
+CRITICAL INSTRUCTIONS - MULTI-PASS REVIEW:
+
+**PASS 1 - BASIC QUALITY CHECK (MANDATORY):**
+1. **TYPOS**: Check for obvious spelling errors. ANY typo is LQ-0.5.
+2. **VERB CONJUGATION**: Verify verbs are conjugated correctly (imperative, tense, subject agreement). Errors are TE-0.5 or LQ-0.5.
+3. **GENDER/NUMBER AGREEMENT**: Check adjectives, articles, and participles agree with nouns. Errors are TE-0.5 or LQ-0.5.
+4. **PUNCTUATION**: Check for proper punctuation (spaces before :;!?, etc.). Errors are LQ-0.5.
+5. **MEANING ACCURACY**: Verify the translation conveys the same meaning as the source. Major changes or negation errors are TE-2.
+
+**PASS 2 - GLOSSARY VALIDATION (MANDATORY):**
+6. **TERMINOLOGY CHECK**: Identify ALL terms in the source text that might be in the Notion Glossary. For EACH term found in the glossary, verify the French translation matches the official fr_FR entry exactly. If ANY glossary term is translated incorrectly, assign TC-0.5 error code.
+
+**PASS 3 - STYLE & CONSISTENCY:**
+7. Check tone, formality, and style against Notion's style guide.
+
+If you find ANY error in any pass, you MUST:
    - Provide a CORRECTED translation in "revised_text"
-   - Assign appropriate error code(s): TE-2, TE-0.5, TC-0.5, LQ-0.5, or ST-0.5
-   - Explain the error briefly, including which glossary term was wrong if applicable
-5. If the translation is acceptable with no documented errors:
+   - Assign ALL appropriate error code(s): TE-2, TE-0.5, TC-0.5, LQ-0.5, or ST-0.5
+   - Explain EACH error briefly
+   
+If the translation is acceptable with no errors:
    - Return the ORIGINAL translation unchanged in "revised_text"
    - Return empty error_codes array []
    - Set comment to null
 
 ERROR CODE REFERENCE:
 - TE-2: Major translation error (meaning changed, negation missing, critical omission)
-- TE-0.5: Minor translation error (small grammar issue, minor omission)
-- TC-0.5: Terminology/consistency violation (wrong term from glossary) - **USE THIS for ANY glossary term mismatch**
-- LQ-0.5: Language quality (punctuation, spelling, grammar)
+- TE-0.5: Minor translation error (grammar issues, verb conjugation, agreement problems)
+- TC-0.5: Terminology/consistency violation (wrong term from glossary)
+- LQ-0.5: Language quality (punctuation, SPELLING/TYPOS, grammar)
 - ST-0.5: Style violation (wrong tone, unidiomatic)
-
-GLOSSARY VALIDATION:
-- Check ALL terms against the Notion Glossary: https://notion.notion.site/Notion-Glossary-3a85fe79a5a147c0b6d7ebd55f06ae36
-- Common terms to check: standup, Chat, Marketplace, guests, Seats, Hub, plan, audit log, teamspace, @-mentions, slash commands (/summary, /code, etc.)
-- If a term from the glossary is used incorrectly, it's ALWAYS a TC-0.5 error.
 
 OUTPUT FORMAT (JSON ONLY, NO MARKDOWN):
 {{
     "revised_text": "CORRECTED French translation if error found, or ORIGINAL if no error",
-    "error_codes": ["TE-2"] or [],
+    "error_codes": ["TE-0.5", "LQ-0.5"] or [],
     "comment": "Brief explanation of what was wrong and how you fixed it" or null,
     "confidence_score": 0-100
 }}
 
 EXAMPLES:
+
+Example 1 - Missing negation:
 Source: "I cannot do this"
 Target: "Je peux faire cela"
 Output: {{"revised_text": "Je ne peux pas faire cela", "error_codes": ["TE-2"], "comment": "Missing negation - 'cannot' was translated as 'can'", "confidence_score": 95}}
 
+Example 2 - Typo:
+Source: "Click here to continue"
+Target: "Cliquez ici poru continuer"
+Output: {{"revised_text": "Cliquez ici pour continuer", "error_codes": ["LQ-0.5"], "comment": "Typo: 'poru' → 'pour'", "confidence_score": 100}}
+
+Example 3 - Verb conjugation + agreement:
+Source: "Please share feedback and use thumbs up/down"
+Target: "Partagez vos commentaires et utiliser les pouces levé/baissé"
+Output: {{"revised_text": "Partagez vos commentaires et utilisez les pouces levés/baissés", "error_codes": ["TE-0.5", "TE-0.5"], "comment": "Verb conjugation: 'utiliser' → 'utilisez' (imperative); Agreement: 'levé/baissé' → 'levés/baissés' (plural)", "confidence_score": 100}}
+
+Example 4 - No errors:
 Source: "Hello world"
 Target: "Bonjour le monde"
 Output: {{"revised_text": "Bonjour le monde", "error_codes": [], "comment": null, "confidence_score": 100}}
 
-REMEMBER: If there's an error, FIX IT in revised_text. Don't just return the broken translation!
+REMEMBER: 
+- Check BASIC ERRORS FIRST (typos, grammar, conjugation)
+- Then check glossary terms
+- If there's ANY error, FIX IT in revised_text
+- ALWAYS assign appropriate error codes for EVERY error found
 """
 
     def _empty_result(self, text, confidence=0):
