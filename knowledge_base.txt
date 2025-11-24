@@ -57,6 +57,29 @@ Only flag issues that clearly violate these rules.
 - **Formality**: Use "vous" generally, but check context.
 - **Terminology**: Consistency is key. Use the Glossary.
 
+### 🚫 FORBIDDEN WORDS & PHRASES (ST-0.5):
+The following words and phrases are **FORBIDDEN** in Notion's French translations:
+- **"collaborez" / "collaborer"** → Use alternative phrasing like "travailler avec", "travailler en équipe", etc.
+- **"collaboration"** → Use "travail en équipe", "travail d'équipe", etc.
+
+If any forbidden word is used, assign **ST-0.5** error code and provide an alternative.
+
+### ⚠️ COMMON FRENCH ERRORS TO CHECK:
+1. **Missing spaces** (LQ-0.5):
+   - "pourque" → "pour que"
+   - "lorsque" → check it's one word (correct)
+   - French compound conjunctions often need spaces: "pour que", "afin que", "bien que", etc.
+
+2. **Untranslated English words** (TE-2):
+   - Check for ANY English word left in French text
+   - Common mistakes: "comments" → "commentaires", "feedback" → check glossary
+   - If an English word is left untranslated, it's TE-2 (major error)
+
+3. **French typography rules** (LQ-0.5):
+   - Space BEFORE: : ; ! ? » (colon, semicolon, exclamation, question, closing guillemet)
+   - Space AFTER: « (opening guillemet)
+   - No space before comma or period
+
 ## 📚 NOTION GLOSSARY - CRITICAL TERMINOLOGY REFERENCE
 **MANDATORY**: You MUST check ALL terms in the translation against the official Notion Glossary.
 **Source**: https://notion.notion.site/Notion-Glossary-3a85fe79a5a147c0b6d7ebd55f06ae36

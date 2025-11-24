@@ -112,11 +112,14 @@ Target (French): "{target}"
 CRITICAL INSTRUCTIONS - MULTI-PASS REVIEW:
 
 **PASS 1 - BASIC QUALITY CHECK (MANDATORY):**
-1. **TYPOS**: Check for obvious spelling errors. ANY typo is LQ-0.5.
-2. **VERB CONJUGATION**: Verify verbs are conjugated correctly (imperative, tense, subject agreement). Errors are TE-0.5 or LQ-0.5.
-3. **GENDER/NUMBER AGREEMENT**: Check adjectives, articles, and participles agree with nouns. Errors are TE-0.5 or LQ-0.5.
-4. **PUNCTUATION**: Check for proper punctuation (spaces before :;!?, etc.). Errors are LQ-0.5.
-5. **MEANING ACCURACY**: Verify the translation conveys the same meaning as the source. Major changes or negation errors are TE-2.
+1. **UNTRANSLATED ENGLISH WORDS**: Scan the French target for ANY English word that should have been translated. This is CRITICAL. Examples: "comments" → "commentaires", "feedback" → check glossary. ANY untranslated English word = TE-2.
+2. **MISSING SPACES**: Check for compound words that need spaces: "pourque" → "pour que", "afin que", "bien que", "parce que". Missing space = LQ-0.5.
+3. **TYPOS**: Check for obvious spelling errors. ANY typo is LQ-0.5.
+4. **VERB CONJUGATION**: Verify verbs are conjugated correctly (imperative, tense, subject agreement). Errors are TE-0.5 or LQ-0.5.
+5. **GENDER/NUMBER AGREEMENT**: Check adjectives, articles, and participles agree with nouns. Errors are TE-0.5 or LQ-0.5.
+6. **PUNCTUATION**: Check for proper French punctuation (space before :;!?», space after «, no space before comma/period). Errors are LQ-0.5.
+7. **MEANING ACCURACY**: Verify the translation conveys the same meaning as the source. Major changes or negation errors are TE-2.
+8. **FORBIDDEN WORDS**: Check if "collaborez", "collaborer", "collaboration" are used. These are FORBIDDEN per Style Guide. Use alternatives like "travailler avec", "travailler en équipe". If found = ST-0.5.
 
 **PASS 2 - GLOSSARY VALIDATION (MANDATORY):**
 6. **TERMINOLOGY CHECK**: Identify ALL terms in the source text that might be in the Notion Glossary. For EACH term found in the glossary, verify the French translation matches the official fr_FR entry exactly. If ANY glossary term is translated incorrectly, assign TC-0.5 error code.
@@ -151,31 +154,51 @@ OUTPUT FORMAT (JSON ONLY, NO MARKDOWN):
 
 EXAMPLES:
 
-Example 1 - Missing negation:
+Example 1 - Untranslated English word (CRITICAL):
+Source: "Jump to the latest comments"
+Target: "Accéder rapidement aux derniers comments"
+Output: {{"revised_text": "Accéder rapidement aux derniers commentaires", "error_codes": ["TE-2"], "comment": "Untranslated English word: 'comments' → 'commentaires'", "confidence_score": 100}}
+
+Example 2 - Missing space:
+Source: "So you can spot what matters"
+Target: "pourque vous puissiez repérer l'essentiel"
+Output: {{"revised_text": "pour que vous puissiez repérer l'essentiel", "error_codes": ["LQ-0.5"], "comment": "Missing space: 'pourque' → 'pour que'", "confidence_score": 100}}
+
+Example 3 - Forbidden word:
+Source: "When collaborating with your team"
+Target: "lorsque vous collaborez avec votre équipe"
+Output: {{"revised_text": "lorsque vous travaillez en équipe", "error_codes": ["ST-0.5"], "comment": "Forbidden word: 'collaborez' is not allowed per Style Guide. Use 'travaillez en équipe' instead", "confidence_score": 95}}
+
+Example 4 - Missing negation:
 Source: "I cannot do this"
 Target: "Je peux faire cela"
 Output: {{"revised_text": "Je ne peux pas faire cela", "error_codes": ["TE-2"], "comment": "Missing negation - 'cannot' was translated as 'can'", "confidence_score": 95}}
 
-Example 2 - Typo:
+Example 5 - Typo:
 Source: "Click here to continue"
 Target: "Cliquez ici poru continuer"
 Output: {{"revised_text": "Cliquez ici pour continuer", "error_codes": ["LQ-0.5"], "comment": "Typo: 'poru' → 'pour'", "confidence_score": 100}}
 
-Example 3 - Verb conjugation + agreement:
+Example 6 - Verb conjugation + agreement:
 Source: "Please share feedback and use thumbs up/down"
 Target: "Partagez vos commentaires et utiliser les pouces levé/baissé"
 Output: {{"revised_text": "Partagez vos commentaires et utilisez les pouces levés/baissés", "error_codes": ["TE-0.5", "TE-0.5"], "comment": "Verb conjugation: 'utiliser' → 'utilisez' (imperative); Agreement: 'levé/baissé' → 'levés/baissés' (plural)", "confidence_score": 100}}
 
-Example 4 - No errors:
+Example 7 - No errors:
 Source: "Hello world"
 Target: "Bonjour le monde"
 Output: {{"revised_text": "Bonjour le monde", "error_codes": [], "comment": null, "confidence_score": 100}}
 
-REMEMBER: 
-- Check BASIC ERRORS FIRST (typos, grammar, conjugation)
-- Then check glossary terms
+REMEMBER - CRITICAL PRIORITIES:
+1. **FIRST**: Scan for untranslated English words (TE-2)
+2. **SECOND**: Check for missing spaces in compound words (LQ-0.5)
+3. **THIRD**: Check for forbidden words: "collaborez", "collaborer", "collaboration" (ST-0.5)
+4. **FOURTH**: Check typos, grammar, verb conjugation, agreement
+5. **FIFTH**: Check glossary terms
+6. **SIXTH**: Check style and tone
 - If there's ANY error, FIX IT in revised_text
 - ALWAYS assign appropriate error codes for EVERY error found
+- Be thorough - don't skip any checks!
 """
 
     def _empty_result(self, text, confidence=0):
