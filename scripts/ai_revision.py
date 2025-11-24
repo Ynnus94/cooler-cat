@@ -184,11 +184,17 @@ If the translation is acceptable with no errors:
    - Set comment to null
 
 ERROR CODE REFERENCE:
-- TE-2: Major translation error (meaning changed, negation missing, critical omission)
+- TE-2: Major translation error (meaning changed, negation missing, critical omission, untranslated words)
 - TE-0.5: Minor translation error (grammar issues, verb conjugation, agreement problems)
 - TC-0.5: Terminology/consistency violation (wrong term from glossary)
-- LQ-0.5: Language quality (punctuation, SPELLING/TYPOS, grammar)
-- ST-0.5: Style violation (wrong tone, unidiomatic)
+- LQ-0.5: Language quality (punctuation, SPELLING/TYPOS, grammar, spacing)
+- ST-0.5: Style violation (forbidden words, wrong tone, unidiomatic phrases)
+
+**COMMENT GUIDELINES:**
+- For Style Guide violations (ST-0.5, forbidden words, formatting rules): Add "(per Style Guide)" to explain the source
+- For glossary violations (TC-0.5): Add "(per Glossary)" or mention the glossary term
+- For general errors (typos, grammar, mistranslations): No need to reference a source
+- Always explain WHAT was wrong and HOW you fixed it
 
 OUTPUT FORMAT (JSON ONLY, NO MARKDOWN):
 {{
@@ -208,17 +214,17 @@ Output: {{"revised_text": "Accéder rapidement aux derniers commentaires", "erro
 Example 2 - Forbidden word "collaborez" (ST-0.5):
 Source: "When collaborating with your team"
 Target: "lorsque vous collaborez avec votre équipe"
-Output: {{"revised_text": "lorsque vous travaillez en équipe", "error_codes": ["ST-0.5"], "comment": "Forbidden word: 'collaborez' → use 'travaillez en équipe'", "confidence_score": 100}}
+Output: {{"revised_text": "lorsque vous travaillez en équipe", "error_codes": ["ST-0.5"], "comment": "Forbidden word (per Style Guide): 'collaborez' → use 'travaillez en équipe'", "confidence_score": 100}}
 
 Example 3 - Forbidden word "Veuillez" (ST-0.5):
 Source: "Please try again later"
 Target: "Veuillez réessayer plus tard"
-Output: {{"revised_text": "Réessayez plus tard", "error_codes": ["ST-0.5"], "comment": "Forbidden word: 'Veuillez' → use direct imperative 'Réessayez'", "confidence_score": 100}}
+Output: {{"revised_text": "Réessayez plus tard", "error_codes": ["ST-0.5"], "comment": "Forbidden word (per Style Guide): 'Veuillez' is too formal → use direct imperative 'Réessayez'", "confidence_score": 100}}
 
 Example 4 - Missing space (LQ-0.5):
 Source: "So you can spot what matters"
 Target: "pourque vous puissiez repérer l'essentiel"
-Output: {{"revised_text": "pour que vous puissiez repérer l'essentiel", "error_codes": ["LQ-0.5"], "comment": "Missing space: 'pourque' → 'pour que'", "confidence_score": 100}}
+Output: {{"revised_text": "pour que vous puissiez repérer l'essentiel", "error_codes": ["LQ-0.5"], "comment": "Missing space in compound word (per Style Guide): 'pourque' → 'pour que'", "confidence_score": 100}}
 
 Example 5 - Typo (LQ-0.5):
 Source: "Click here to continue"
@@ -233,9 +239,14 @@ Output: {{"revised_text": "Partagez vos commentaires dans #channel et utilisez l
 Example 7 - Forbidden phrase "il vous suffit de" (ST-0.5):
 Source: "Just click the button"
 Target: "Il vous suffit de cliquer sur le bouton"
-Output: {{"revised_text": "Cliquez sur le bouton", "error_codes": ["ST-0.5"], "comment": "Forbidden phrase: 'Il vous suffit de' → use direct imperative", "confidence_score": 100}}
+Output: {{"revised_text": "Cliquez sur le bouton", "error_codes": ["ST-0.5"], "comment": "Forbidden phrase (per Style Guide): 'Il vous suffit de' feels like judgment → use direct imperative", "confidence_score": 100}}
 
-Example 8 - No errors:
+Example 8 - Glossary term violation (TC-0.5):
+Source: "Enable web search for workspace"
+Target: "Activer la recherche Web pour espace de travail"
+Output: {{"revised_text": "Activer la recherche Web pour l'espace de travail", "error_codes": ["TC-0.5"], "comment": "Glossary term (per Glossary): 'workspace' → 'l'espace de travail' (missing article)", "confidence_score": 95}}
+
+Example 9 - No errors:
 Source: "Hello world"
 Target: "Bonjour le monde"
 Output: {{"revised_text": "Bonjour le monde", "error_codes": [], "comment": null, "confidence_score": 100}}
@@ -259,6 +270,7 @@ REMEMBER - SYSTEMATIC REVIEW REQUIRED:
 - If ANY error found → FIX IT in revised_text
 - Assign ALL appropriate error codes
 - Explain EACH error in comment
+- **Reference the source**: For Style Guide violations (forbidden words, punctuation rules, formatting), add "(per Style Guide)" to the comment
 - Be systematic - check ALL 10 points above
 - Don't let ANY forbidden word slip through!
 """
