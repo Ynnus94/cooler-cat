@@ -160,103 +160,242 @@ If any forbidden word/phrase is used, assign **ST-0.5** error code and provide a
 - Example of content → infinitive or neutral: "Nom complet"
 
 ## 📚 NOTION GLOSSARY - CRITICAL TERMINOLOGY REFERENCE
-**MANDATORY**: You MUST check ALL terms in the translation against the official Notion Glossary.
+**MANDATORY**: You MUST check ALL terms against the official Notion Glossary.
 **Source**: https://notion.notion.site/Notion-Glossary-3a85fe79a5a147c0b6d7ebd55f06ae36
 
 ### ⚠️ TERMINOLOGY VALIDATION RULES:
-1. **EVERY term** that appears in the Notion Glossary MUST be translated exactly as specified in the glossary (fr_FR column).
-2. If a term from the glossary is translated incorrectly, assign **TC-0.5** error code.
-3. If a term from the glossary is missing or omitted, assign **TC-0.5** or **TE-0.5** depending on severity.
-4. You must check ALL items in the glossary - not just some, but ALL of them.
+1. **EVERY term** in the Notion Glossary MUST be translated exactly as specified.
+2. Glossary mismatch = **TC-0.5** error + comment "(per Glossary)"
+3. Check EVERY technical term, UI element, product name, and feature.
 
-### 📋 KEY NOTION TERMS (Sample - Check ALL items in glossary):
-**Product Features:**
-- standup / standup-meeting → Check glossary for exact French term
-- Chat → Check glossary for exact French term
-- Marketplace → Check glossary for exact French term
-- guests → Check glossary for exact French term
-- Notion Forms → Check glossary for exact French term
-- Notion Picks → Check glossary for exact French term
-- Out of Office (OOO) → Check glossary for exact French term
-- screenshot → Check glossary for exact French term
-- property group → Check glossary for exact French term
-- student organization → Check glossary for exact French term
-- Seats → Check glossary for exact French term (billing context)
-- Notion Assistant → Check glossary for exact French term
-- Notion Basics → Check glossary for exact French term
-- horizontal / vertical bar chart → Check glossary for exact French term
-- donut chart → Check glossary for exact French term
-- Search Engine Optimization (SEO) → Check glossary for exact French term
-- Make with Notion → Check glossary for exact French term
-- suggested edits → Check glossary for exact French term
-- AI skills → Check glossary for exact French term
-- Open teamspace → Check glossary for exact French term
-- Private teamspace → Check glossary for exact French term
-- Hub → Check glossary for exact French term
-- charts → Check glossary for exact French term
-- plan → Check glossary for exact French term (subscription context)
-- Security & Compliance partner program → Check glossary for exact French term
-- audit log → Check glossary for exact French term
+### 📋 KEY NOTION GLOSSARY TERMS (165+ entries):
 
-**Calendar App Terms:**
-- event blocking → Check glossary for exact French term
-- debug info → Check glossary for exact French term
-- Google Calendar → Check glossary for exact French term
-- menu bar calendar → Check glossary for exact French term
-- cut → Check glossary for exact French term
-- all-day section → Check glossary for exact French term
-- snippet → Check glossary for exact French term
-- Scheduling link → Check glossary for exact French term
-- Meet with → Check glossary for exact French term
-- Hold → Check glossary for exact French term
-- Scheduling snippet → Check glossary for exact French term
+**Core Product Terms:**
+- workspace → espace de travail
+- teamspace → espace d'équipe
+- guest → invité·e / personnes invitées
+- seat → place
+- Inbox → Boîte de réception
+- sidebar → barre latérale
+- toggle → menu dépliant
+- subpage → sous-page
+- hub → centre
+- wiki → wiki (invariable)
 
-**Slash Commands & @-mentions:**
-- /summary → Check glossary for exact French term
-- @-mention → Check glossary for exact French term
-- @last → Check glossary for exact French term
-- @next → Check glossary for exact French term
-- @now → Check glossary for exact French term
-- @remind → Check glossary for exact French term
-- @today → Check glossary for exact French term
-- @tomorrow → Check glossary for exact French term
-- @yesterday → Check glossary for exact French term
-- /audio → Check glossary for exact French term
-- /board view → Check glossary for exact French term
-- /book → Check glossary for exact French term
-- /bread → Check glossary for exact French term
-- /bullet → Check glossary for exact French term
-- /button → Check glossary for exact French term
-- /calendar view → Check glossary for exact French term
-- /code → Check glossary for exact French term
-- /color → Check glossary for exact French term
-- /comment → Check glossary for exact French term
-- /database - full page → Check glossary for exact French term
-- /database - inline → Check glossary for exact French term
-- /date → Check glossary for exact French term
-- /default → Check glossary for exact French term
+**Database & Views:**
+- board view → vue Tableau Kanban (can abbreviate to Tableau)
+- table view → vue table (NOT "vue Tableau")
+- list view → vue Liste
+- Feed view → vue Fil d'actualité
+- Map view → vue Carte
+- inline database → base de données intégrée
+- full-page database → base de données pleine page
+- rollup → agrégation
+- Status (property) → État (with capital)
+- Place property → propriété Lieu
+- created by (property) → Créé par (masculine)
+- created by (page) → Créée par (feminine)
+- person property → propriété de type Personne
 
-**Recent Launches:**
-- Notion Sites → Check glossary for exact French term
-- Notion AI connectors → Check glossary for exact French term
+**AI & Automation:**
+- Notion AI → IA de Notion
+- AI block → bloc d'IA
+- prompt → instruction
+- agent → agent (keep in English context)
+- Personal Agent → agent personnel
+- AI Meeting Notes → Notes d'IA (NOT "Notes de réunion")
+- Meeting Notes → Notes de réunion (generic)
+- feedback → commentaire (general) / avis (invites)
+- thumbs up/down → pouce levé/baissé
+- Do/When (automation) → Faire/Quand
 
-### 🔍 HOW TO USE THE GLOSSARY:
-1. When reviewing a translation, identify ALL terms that might be in the glossary.
-2. For EACH term found in the English source, check if it exists in the Notion Glossary.
-3. If the term exists in the glossary, the French translation MUST match the fr_FR entry exactly.
-4. If there's a mismatch, flag it as TC-0.5 and provide the correct term from the glossary.
-5. Remember: The glossary contains ALL validated terms - check ALL items, not just some.
+**Commands:**
+- /button → /bouton
+- /meet → /notes
+- @remind → @rappel
+- @today → @today (keep English - system variable)
 
-### ⚠️ CRITICAL REQUIREMENTS:
-- **CHECK ALL ITEMS**: You must check EVERY SINGLE term in the translation against ALL items in the Notion Glossary.
-- The glossary is the SOURCE OF TRUTH for terminology.
-- If a term is in the glossary, it MUST be used exactly as specified.
-- Do NOT accept alternative translations for glossary terms.
-- The glossary contains hundreds of validated terms - you must check ALL of them, not just a few.
-- When reviewing a translation, systematically go through the source text and identify every term that might be in the glossary.
-- For each identified term, verify it matches the fr_FR entry exactly.
-- If you find ANY mismatch with the glossary, it's a TC-0.5 error.
-- Glossary URL: https://notion.notion.site/Notion-Glossary-3a85fe79a5a147c0b6d7ebd55f06ae36
+**Features & Actions:**
+- upload → charger (NOT "importer" for web UI)
+- search → chercher (verb) / recherche (noun)
+- assignee → Responsable
+- due date → date d'échéance
+- suggested edits → modifications suggérées
+- backlinks → liens entrants
+- embeds → intégrations de contenu
+- link previews → aperçus de liens
+
+**Product Names (DO NOT TRANSLATE):**
+- Notion Calendar
+- Notion Forms
+- Notion Docs
+- Notion Mail
+- Notion Sites
+- Enterprise Plan → forfait Enterprise
+- Marketplace → la Marketplace (with article)
+
+**Business/Consulting:**
+- workflow → étapes / flux de travail
+- use case → cas d'utilisation
+- onboarding → intégration
+- knowledge base → base de connaissances
+- implementation → mise en œuvre (NOT "implémentation")
+- change management → gestion du changement
+- Statement of Work → cahier des charges
+- Consulting Partner → Partenaire consultant
+- Sales Partner → Partenaire commercial
+- track record → historique / expérience démontrée
+- time to value → création de valeur
+- tool sprawl → prolifération des outils
+- bandwidth (HR context) → capacité / disponibilité
+
+**Common Errors:**
+- ❌ comment**s** (left in English) → ✅ commentaires
+- ❌ support → ✅ service client
+- ❌ collaborer → ✅ travailler en équipe
+- ❌ workspace analytics → ✅ analyse de l'espace de travail
+- ❌ tagged (in property) → ✅ mentionné (NOT "étiqueté")
+- ❌ owner → ✅ personne responsable (NOT "propriétaire")
+
+### 🔍 HOW TO USE:
+1. **SCAN** the English source for Notion-specific terms
+2. **CHECK** if each term exists in this glossary
+3. **VERIFY** the French translation matches exactly
+4. **FLAG** any mismatch as TC-0.5 with comment "(per Glossary): [term] → [correct translation]"
+
+## 📐 ENTERPRISE STYLE GUIDE - ADDITIONAL RULES
+
+**Readability:**
+- Transcreation encouraged - deviate from English when needed for natural French
+- Look for slang, puns, idioms - convey meaning, don't translate literally
+- Avoid regional expressions and slang
+
+**Inclusive Language:**
+- Avoid sexist, racist, or biased expressions
+- Put people first when mentioning disabilities: "utilisateurs avec des handicaps" (NOT "utilisateurs handicapés")
+- Promote gender equality with neutral words
+- Use "vous" (formal address) consistently
+- When source uses "they" (singular/collective), agree pronoun in gender/number with noun
+
+**Style:**
+- Use active over passive sentences
+- Avoid gerunds
+- Use synonyms to avoid repetitions
+- Use imperative for titles/headers: "Créez un profil"
+
+**Grammar:**
+- Refer to Académie française, Larousse, Le Robert as source of truth
+- Do NOT use anglicisms if French translation exists
+- Do NOT apply 1990 spelling reform: "entraîner" NOT "entrainer"
+
+**Punctuation:**
+- Do NOT use full stops in titles (question marks/exclamation marks OK)
+- Do NOT use punctuation in CTAs
+- Never use more than one exclamation/question mark
+- Never use exclamation points in failure messages
+- Replace hyphens with parentheses/commas or rephrase
+- Use French quotes «  » not English " "
+- Use straight apostrophe ' not curly '
+- Don't overuse ellipsis…
+
+**Abbreviations:**
+- Use only if necessary (character limits)
+- Most abbreviations end with period: "suppl."
+- Units of measure: no period (g, kg, m)
+- Plural abbreviations do NOT take "s": "les API" NOT "les APIs"
+- Spell out abbreviation first time: "Union Européenne (UE)"
+
+**Numbers:**
+- Spell out numbers that begin sentences
+- Non-breaking space for thousands/hundreds: 1 234
+- Comma for decimals: 1 234,56
+- Ordinals: 1er, 1re, 2e, 3e (NOT 1ère, 2ème)
+- Spell out 0-9, use numerals for 10+
+
+**Dates & Times:**
+- Format: day, month, year (dd/mm/yy)
+- Use 24-hour system: 17h00 (NOT 5 pm)
+- Separate with "h" and non-breaking spaces: 17 h 00
+- Months/days: lowercase (janvier, lundi)
+
+**Currency:**
+- Place after amount with non-breaking space: 20 €
+- Keep prices as-is (don't convert)
+
+**Placeholders:**
+- Do NOT translate, edit, or delete placeholders
+- Check capitalization is correct
+- Rephrase to avoid grammatical problems
+
+**CTAs:**
+- Keep short, actionable, clear
+- Use infinitive, start with verb: "Télécharger l'application"
+
+**Character Limits:**
+- Pay close attention to any character limits
+
+## 🎓 LEARNING JOURNAL - RECURRING PATTERNS
+
+**Critical Recurring Errors:**
+1. **"upload" ≠ télécharger** (LQ-0.5)
+   - upload → charger / importer
+   - download → télécharger
+   - Common error: translating upload as "télécharger"
+
+2. **"existing users" ≠ anciens utilisateurs** (TE-0.5)
+   - existing users → utilisateurs existants / actuels
+   - NOT "anciens" (suggests former users)
+
+3. **"is live" ≠ est en arrivée** (TE-2 - OPPOSITE MEANING!)
+   - is live → est disponible / est lancé
+   - coming soon → arrive bientôt / est en arrivée
+
+4. **"everyday users" ≠ utilisateurs quotidiens** (TC-0.5)
+   - everyday users → utilisateurs réguliers / standards
+   - NOT "quotidiens" (literal translation error)
+
+5. **No inclusive writing for -eur words** (Style)
+   - utilisateur → utilisateurs (NOT "utilisateur·rices")
+   - administrateur, gestionnaire, etc. - all stay masculine
+
+6. **Tiret cadratin (—) FORBIDDEN in French UI** (LQ-0.5)
+   - Replace with period, colon, comma, or rephrase
+   - ❌ "normal — soit"
+   - ✅ "normal, soit" or "normal : soit"
+
+7. **Accord errors with participles** (TE-0.5)
+   - "le contenu est exact" ✅ (masculine)
+   - "le contenu est exacte" ❌ (wrong gender)
+
+8. **Placeholders - no added words** (Critical)
+   - Translate only what's in source
+   - Don't add words like "utilisateur" if not in source
+
+9. **"Veuillez" overuse** (ST-0.5)
+   - Already in forbidden words, but very common error
+
+10. **ICU plurals need non-breaking spaces** (LQ-0.5)
+    - {count} propriété → {count}°propriété
+    - Always use non-breaking space after placeholder
+
+**Tone & Register Patterns:**
+- Politesse superflue: avoid "Please" in French UI (be direct)
+- CTA = infinitif / Notification = impératif
+- Tooltips = infinitif / Placeholders = impératif
+- Messages d'erreur: direct ("Impossible de...") or explanatory ("Vous ne pouvez pas...") based on context
+
+**Typography Patterns:**
+- Emoji: non-breaking space after punctuation: ".°🎉"
+- Espaces insécables: numbers 10,000+ only (NOT 2000)
+- Espace before emoji at sentence start: normal space (NOT insécable)
+- Linking numbers to words: "lot°{batchNumber}", "page°5"
+
+**Common Anglicisms to Avoid:**
+- ❌ politiques (company) → ✅ procédures / règles
+- ❌ différenciateurs → ✅ avantages distinctifs
+- ❌ source unique de vérité → ✅ référence unique
+- ❌ implémentation → ✅ mise en œuvre
+- ❌ qualifier pour → ✅ accéder à / obtenir
 
 ## ℹ️ NOTION CONTEXT (Help Center Topics)
 The following topics are relevant to Notion's product:

@@ -144,28 +144,45 @@ CRITICAL INSTRUCTIONS - MULTI-PASS REVIEW:
    - "poru" → "pour", etc.
    - ANY typo = LQ-0.5
 
-**PASS 2 - GRAMMAR & STYLE:**
+**PASS 2 - GLOSSARY VALIDATION (MANDATORY):**
 
-6. **VERB CONJUGATION** (TE-0.5 / LQ-0.5):
+6. **NOTION TERMINOLOGY** (TC-0.5):
+   - Check EVERY Notion-specific term against glossary
+   - workspace → "espace de travail"
+   - comments → "commentaires" (NOT left in English!)
+   - collaborer → FORBIDDEN (use "travailler en équipe")
+   - upload → "charger" (NOT "télécharger" which = download)
+   - If glossary mismatch = TC-0.5 + "(per Glossary)" comment
+
+**PASS 3 - GRAMMAR & STYLE:**
+
+7. **VERB CONJUGATION** (TE-0.5 / LQ-0.5):
    - Check imperative, tense, subject agreement
    - "utiliser" → "utilisez" (imperative)
 
-7. **GENDER/NUMBER AGREEMENT** (TE-0.5 / LQ-0.5):
+8. **GENDER/NUMBER AGREEMENT** (TE-0.5 / LQ-0.5):
    - Adjectives, articles, participles must agree
    - "levé" → "levés" (plural)
+   - "le contenu est exact" (masculine) NOT "exacte"
 
-8. **EXCLUSIVE NEGATIVES** (ST-0.5):
+9. **EXCLUSIVE NEGATIVES** (ST-0.5):
    - "pour n'afficher que" → "pour afficher uniquement"
    - Transform negatives with "uniquement"
 
-9. **CAPITALIZATION** (LQ-0.5):
-   - Days/months: lowercase ("janvier", "lundi")
-   - After colon: lowercase
-   - Job titles: lowercase
-
-10. **MEANING ACCURACY** (TE-2):
-    - Verify translation = same meaning as source
+10. **MEANING ACCURACY CRITICAL ERRORS** (TE-2):
+    - "is live" → "est disponible" (NOT "est en arrivée" = opposite!)
+    - "existing users" → "utilisateurs actuels" (NOT "anciens")
+    - "everyday users" → "utilisateurs réguliers" (NOT "quotidiens")
     - Negation errors, omissions = TE-2
+
+11. **CAPITALIZATION** (LQ-0.5):
+    - Days/months: lowercase ("janvier", "lundi")
+    - After colon: lowercase
+    - View types: uppercase ("vue Tableau", "vue Liste")
+
+12. **TYPOGRAPHY ERRORS** (LQ-0.5):
+    - NO tiret cadratin (—) in French UI - use period/colon
+    - ICU plurals: {count}°propriété (non-breaking space)
 
 **PASS 2 - GLOSSARY VALIDATION (MANDATORY):**
 6. **TERMINOLOGY CHECK**: Identify ALL terms in the source text that might be in the Notion Glossary. For EACH term found in the glossary, verify the French translation matches the official fr_FR entry exactly. If ANY glossary term is translated incorrectly, assign TC-0.5 error code.
@@ -241,38 +258,58 @@ Source: "Just click the button"
 Target: "Il vous suffit de cliquer sur le bouton"
 Output: {{"revised_text": "Cliquez sur le bouton", "error_codes": ["ST-0.5"], "comment": "Forbidden phrase (per Style Guide): 'Il vous suffit de' feels like judgment → use direct imperative", "confidence_score": 100}}
 
-Example 8 - Glossary term violation (TC-0.5):
-Source: "Enable web search for workspace"
-Target: "Activer la recherche Web pour espace de travail"
-Output: {{"revised_text": "Activer la recherche Web pour l'espace de travail", "error_codes": ["TC-0.5"], "comment": "Glossary term (per Glossary): 'workspace' → 'l'espace de travail' (missing article)", "confidence_score": 95}}
+Example 8 - Untranslated word + glossary (TE-2 + TC-0.5):
+Source: "View comments in your workspace"
+Target: "Voir comments dans votre espace de travail"
+Output: {{"revised_text": "Voir les commentaires dans votre espace de travail", "error_codes": ["TE-2"], "comment": "Untranslated English word: 'comments' → 'commentaires' (per Glossary); missing article 'les'", "confidence_score": 100}}
 
-Example 9 - No errors:
+Example 9 - Critical meaning error (TE-2):
+Source: "The feature is live"
+Target: "La fonctionnalité est en arrivée"
+Output: {{"revised_text": "La fonctionnalité est disponible", "error_codes": ["TE-2"], "comment": "Critical meaning error: 'is live' = already available (NOT 'en arrivée' which means coming soon - opposite meaning!)", "confidence_score": 100}}
+
+Example 10 - Upload/Download confusion (TC-0.5):
+Source: "Upload your file"
+Target: "Téléchargez votre fichier"
+Output: {{"revised_text": "Chargez votre fichier", "error_codes": ["TC-0.5"], "comment": "Common error (per Glossary): 'upload' → 'charger' (NOT 'télécharger' which means 'download')", "confidence_score": 100}}
+
+Example 11 - Tiret cadratin forbidden (LQ-0.5):
+Source: "It's simple — just click here"
+Target: "C'est simple — cliquez simplement ici"
+Output: {{"revised_text": "C'est simple : cliquez simplement ici", "error_codes": ["LQ-0.5"], "comment": "Tiret cadratin (—) forbidden in French UI (per Style Guide) → use colon (:)", "confidence_score": 100}}
+
+Example 12 - No errors:
 Source: "Hello world"
 Target: "Bonjour le monde"
 Output: {{"revised_text": "Bonjour le monde", "error_codes": [], "comment": null, "confidence_score": 100}}
 
-REMEMBER - SYSTEMATIC REVIEW REQUIRED:
+REMEMBER - SYSTEMATIC REVIEW (12-POINT CHECKLIST):
 
-**🚨 CRITICAL CHECKS (Do NOT skip these!):**
-1. Scan EVERY word for untranslated English (TE-2)
-2. Check for forbidden words: "collabor*", "Veuillez", "il vous suffit de" (ST-0.5)
-3. Check for missing spaces: "pourque", "afin que", etc. (LQ-0.5)
-4. Check ALL punctuation and spacing (LQ-0.5)
-5. Check for typos and spelling errors (LQ-0.5)
+**🚨 PASS 1 - CRITICAL ERRORS (1-5):**
+1. ✓ Scan EVERY word for untranslated English → "comments", "feedback" (TE-2)
+2. ✓ Forbidden words → "collabor*", "Veuillez", "il vous suffit de" (ST-0.5)
+3. ✓ Missing spaces → "pourque", "afin que" (LQ-0.5)
+4. ✓ Punctuation/spacing → : ; ! ? « » (LQ-0.5)
+5. ✓ Typos → "poru" → "pour" (LQ-0.5)
 
-**📋 STANDARD CHECKS:**
-6. Verb conjugation and agreement (TE-0.5/LQ-0.5)
-7. Exclusive negatives → use "uniquement" (ST-0.5)
-8. Check glossary terms (TC-0.5)
-9. Verify meaning accuracy (TE-2 for major errors)
+**📚 PASS 2 - GLOSSARY (6):**
+6. ✓ Check EVERY Notion term against glossary → workspace, upload, teamspace, etc. (TC-0.5)
+
+**📝 PASS 3 - GRAMMAR & STYLE (7-12):**
+7. ✓ Verb conjugation → "utiliser" → "utilisez" (TE-0.5)
+8. ✓ Gender/number agreement → "exact" NOT "exacte" with masculine noun (TE-0.5)
+9. ✓ Exclusive negatives → use "uniquement" (ST-0.5)
+10. ✓ Critical meaning errors → "is live" ≠ "en arrivée", "upload" ≠ "télécharger" (TE-2)
+11. ✓ Capitalization → months/days lowercase, view types uppercase (LQ-0.5)
+12. ✓ Typography → NO tiret cadratin (—), non-breaking spaces (LQ-0.5)
 
 **✅ OUTPUT REQUIREMENTS:**
-- If ANY error found → FIX IT in revised_text
-- Assign ALL appropriate error codes
-- Explain EACH error in comment
-- **Reference the source**: For Style Guide violations (forbidden words, punctuation rules, formatting), add "(per Style Guide)" to the comment
-- Be systematic - check ALL 10 points above
-- Don't let ANY forbidden word slip through!
+- If ANY error → FIX IT in revised_text
+- Assign ALL error codes (can have multiple)
+- Explain EACH error
+- **Cite source**: "(per Style Guide)" / "(per Glossary)" / "(per Quality Framework)"
+- Be thorough - check ALL 12 points!
+- Common combos: TE-2 + TC-0.5 (untranslated + glossary), ST-0.5 + LQ-0.5 (forbidden word + spacing)
 """
 
     def _empty_result(self, text, confidence=0):
