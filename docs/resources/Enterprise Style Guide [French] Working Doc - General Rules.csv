@@ -1,0 +1,92 @@
+Category,Rule N.,Rule,English source (optional),Dos,Don'ts
+,1,Keep a positive tone even when you are announcing news that may be unpleasant. ,,,
+,2,Avoid regional and slang expressions.,,,
+,3,Localize cultural differences to provide an equivalent that is understandable by the target readers.,,,
+,4,Avoid jargon and statistical terminology.,,,
+Readability,5,Transcreation is encouraged. You can deviate from the English source whenever needed while communicating the same message to avoid literal phrasings and readability issues.,,,
+,6,"Look out for slang, puns, and idiomatic phrasings, then try to convey them into your translation. If you find an equivalent or alternative solution, do use it. If not, don’t translate literally; express the main idea clearly and idiomatically.",,,
+Inclusive language,7,"Avoid expressions that express or imply ideas that are sexist, racist, or otherwise biased, prejudiced, or denigrating to any particular group of people.",This hotel offers sign language interpreters free of charge for the hearing impaired.,"L’hôtel offre un service de langage des signes pour les personnes malentendantes.","L’hôtel offre un service de langage des signes pour les sourds."
+,8,Avoid phrases that assume everyone can see or hear.,,,
+,9,"When mentioning disabilities, put people first.",,utilisateurs avec des handicaps,utilisateurs handicapés
+,10,"Promote gender equality with neutral words and phrases and, whenever possible, avoid pronouns and categorisations of this kind.","Are you ready to book your next flight?
+Going with your partner?","Vous pensez à réserver votre prochain vol ?
+Vous voyagez avec votre partenaire ?","Vous êtes prêt à réserver votre prochain vol ?
+Vous voyagez avec votre mari ou votre femme ?"
+,11,"When the source uses “they” as a gender-neutral singular or as a collective (Air France > they), in French, agree the pronoun in gender and number with the name it replaces.",The traveller explained that their trip went well.,"Le voyageur a expliqué que son voyage s’est bien passé.
+",Le voyageur a expliqué que leur voyage s’est bien passé.
+Form of address,12,"Use the formal form of address ""vous"".",You create a profile.,Vous avez créé un profil.,Tu as créé un profil.
+Style,13,Use active over passive sentences.,,La compagnie aérienne a annulé la réservation.,La réservation a été annulée par la compagnie aérienne.
+,14,Avoid gerunds as much as possible.,,,
+,15,Use synonyms or periphrasis to avoid repetitions within a sentence or section of text.,,Téléchargez l’application puis inscrivez-vous sur l’application.,Téléchargez l’application. Créez votre compte dessus.
+,16,Use the imperative for titles and headers.,Create your profile,Créez un profil,Créer un profil
+Grammar,17,"Refer to the Académie française,  Larousse or Le Robert as the source of truth for grammar and spelling.",,,
+,18,Do not use anglicisms if a French translation exists and is widespread. You may use a loan word when it's commonly used.,,"vérifier
+week-end","check
+fin de semaine"
+,19,Do not apply the 1990 spelling reform.,,entraîner,entrainer
+Punctuation,20,Do not use full stops in titles. Question marks and exclamation marks can be used.,,,
+,21,Subtitles and paragraphs should always be punctuated.,,,
+,22,Do not use punctuation in CTAs.,,Réserver,"Réserver.
+Réserver !"
+,23,Use a non-breaking space before double punctuation marks.,,Des questions ?,Des questions?
+,24,Use semicolons only in particularly long and complex sentences that could not easily be simplified. ,,,
+,25,Never use more than one exclamation or question mark. ,Congratulations! You have won!,"Félicitations, vous avez gagné !",Félicitations ! Vous avez gagné !
+,26,Never use exclamation points in failure messages or alerts.,,Le téléchargement a échoué.,Le téléchargement a échoué !
+,27,"Replace hyphens with parentheses or commas, or rephrase to remove the punctuation sign.",,"Pas de publicités, pas de stress ; rien que de bonnes prédictions et les meilleures offres de voyage.","Pas de publicités, pas de stress — juste de bonnes prédictions et les meilleures offres de voyage."
+,28,Use French quotes (« »),,« La meilleure application »,"""La meilleure application"""
+,29,"Use the straight apostrophe, not the curly one.",,L'application,L’application
+,30,"Periods go inside quotation marks except for when the parenthetical is part of a larger sentence when they should go outside the quotation marks. 
+",,"Les deux remboursements sont en cours. (Cependant, ils prendront entre 4 et 6 semaines.)",
+,31,"Put Question marks inside quotation marks if they’re part of the quote. Put them outside parentheses when the parenthetical is part of a larger sentence, and inside parentheses when the parenthetical stands alone.",,,
+,32,"Don't overuse ellipsis. If the ellipsis replaces something in the middle of a sentence, then you don’t need a capital letter afterwards. If it replaces the end of a sentence, then you need a capital letter afterwards.",,,
+,33,Don’t use ampersands unless when they are part of a company or brand name.,,,
+,34,Do not use the Oxford comma in lists.,,"Les utilisateurs admirent leurs parents, Oprah et Justin Timberlake.","Les utilisateurs admirent leurs parents, Oprah, et Justin Timberlake."
+,35,"Do not add a space before and after the slash if it separates two words, but do add a space before and after the slash if it separates two groups of words.",leads/clients,clients potentiels/actuels,clients potentiels / actuels
+Non-breaking space,36,"Use a non-breaking space when a number is combined with a unit of measure, a countable noun, a percentage sign, and before double punctuation marks.",,50 %,50%
+Abbreviations,37,"Spell out an abbreviation or acronym the first time you mention it, then use the short version. ",,First use: Union Européenne (UE) Second use: UE,
+,38,Do not use airport codes without defining the location first. ,,,
+,39,Do not pluralise acronyms in French.,,les API,les APIs
+Capitalization,40,"Use sentence case (only the first letter of the sentence and names are capitalised), regardless of the source.
+",,En savoir plus,En Savoir Plus
+,41,Capital letters should be accented.,,Économiser,Economiser
+,42,Write months and days of the week using lowercase.,,5 janvier,5 Janvier
+,43,Capitalize the names of websites and apps per their own copyrights. Don’t italicize or use quotes.,,,
+,44,"In legal texts, defined terms should be capitalised. If a defined term consists of multiple words, only capitalize the first letter of the first word.",Rebooking Credit Terms,Conditions du crédit à valoir sur une nouvelle réservation,"conditions du crédit à valoir sur une nouvelle réservation
+Conditions du Crédit à valoir sur une Nouvelle Réservation"
+Numerals,45,"Spell out a number when it begins a sentence. Otherwise, use the numeral. This includes ordinals, too.",,,
+,46,Use a non-breaking space to separate thousands and hundreds.,,,
+,47,Use comma for decimals.,,"1 234,56","1234.56
+1.234,56"
+,48,"Abbreviate ordinals following this example:
+
+","1st
+2nd, 3rd","1er, 1re
+2e, 3e","1ère
+2è, 2ème"
+,49,"Numbers from zero through nine, as well as numbers that start a sentence, should be spelled out.
+Use numerals for 10 and above. ",,,
+Bullet lists,50,"When a list is introduced by a complete sentence and the items on the list are not complete sentences, start each item on the list with an initial capital and no punctuation should be used at the end.
+
+",,"* Petit déjeuner
+* Chauffage",
+,51,"When a list is introduced by a complete sentence and the items in the list are full, complete sentences (subject+verb+complement), start each item on the with an initial capital and end with a period.",,"* Depuis le tableau de bord, sélectionnez Mes voyages.
+* Sélectionnez Envoyer un message pour contacter votre hôte.",
+,52,"When a list is introduced by the beginning of a sentence which continues and ends with each of the list items, start each item on the list with lowercase and end with a semicolon. The last item should end with a period.",,,
+Dates,53,"Use the format: day, month, year.    ",,,
+,54,Use the standard abbreviation for days and months.         ,,"janv. / févr. / mars / avr. / mai / juin / juill. / août / sept. / oct. / nov. / déc.
+lun., mar., mer., jeu., ven., sam., dim. ",
+Time,55,Use the 24-hour system. ,,17 h 00,"17h00
+17.00
+5 pm"
+,56,Separate hours and minutes with a h and non-breaking spaces.,,,
+Currency,57,Place the currency sign after the figure separating the two with a non-breaking space.,€20,20 €,"€20
+20€"
+Placeholders,58,"Do not translate, edit or delete placeholders. Depending on the translation, they may change position and order within the sentence. Double check that the capitalisation is correct.",,{number} voyageurs,{number} Voyageurs
+,59,Make sure to rephrase sentences with variables as much as necessary to avoid grammatical problems. The most common are gender/number agreements and the contraction of the preposition.,,"depuis Ajaccio, depuis le Caire
+Vol avec escale : (number)","de Ajaccio, de le Caire
+Vol avec (number) escales > Vol avec 1 escale"
+Call to actions (CTA),60,"Keep the CTA short, actionable, and clear.",,,
+,61,Use the infinitive and always start with a verb.,Download app,Télécharger l'application,Téléchargez l'application
+Character limits,62,Pay close attention to any character limits. ,,,
+URLs,63,Use all lowercase for email addresses and website URLs.  ,,,
+Content in another language,64,"If you find whole sentences/segments in a different language than the target language, please leave them as they are and copy them directly to the target unless otherwise instructed.",,,

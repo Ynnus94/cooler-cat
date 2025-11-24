@@ -294,16 +294,9 @@ async function uploadFile(file) {
 
         const result = await response.json();
 
-        // Log stats if available (debug mode)
-        if (result.stats) {
-            if (window.DEBUG_MODE) console.log('Processing stats:', result.stats);
-            const stats = result.stats;
-            if (stats.total) {
-                showLoading('Processing file...', `Found ${stats.total} translations...`);
-            }
-            if (stats.with_revisions) {
-                showLoading('Processing file...', `Applied ${stats.with_revisions} revisions...`);
-            }
+        // Update loading text with stats if available
+        if (result.stats?.total) {
+            showLoading('Processing file...', `Found ${result.stats.total} translations...`);
         }
 
         await new Promise(resolve => setTimeout(resolve, 1500));
@@ -895,15 +888,15 @@ function base64ToUtf8(base64) {
     return decoder.decode(bytes);
 }
 
+// Unified copy function (works for both revision and comment copy buttons)
 function copyToClipboard(button) {
     const textB64 = button.getAttribute('data-text-b64');
-    let text = base64ToUtf8(textB64);
-    const tempDiv = document.createElement('div');
-    tempDiv.textContent = text;
-    text = tempDiv.textContent || text;
+    if (!textB64) return;
+    
+    const text = base64ToUtf8(textB64);
 
-    navigator.clipboard.writeText(text).then(function () {
-        const originalText = button.innerHTML;
+    navigator.clipboard.writeText(text).then(() => {
+        const originalHTML = button.innerHTML;
         button.innerHTML = `
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -911,41 +904,15 @@ function copyToClipboard(button) {
             Copied!
         `;
         button.classList.add('copied');
-        setTimeout(function () {
-            button.innerHTML = originalText;
+        setTimeout(() => {
+            button.innerHTML = originalHTML;
             button.classList.remove('copied');
         }, 2000);
-    }).catch(async function (err) {
-        console.error('Failed to copy: ', err);
-        await showAlert('Failed to copy to clipboard');
-    });
+    }).catch(() => showAlert('Failed to copy to clipboard'));
 }
 
-function copyCommentToClipboard(button) {
-    const textB64 = button.getAttribute('data-text-b64');
-    let text = base64ToUtf8(textB64);
-    const tempDiv = document.createElement('div');
-    tempDiv.textContent = text;
-    text = tempDiv.textContent || text;
-
-    navigator.clipboard.writeText(text).then(function () {
-        const originalText = button.innerHTML;
-        button.innerHTML = `
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            Copied!
-        `;
-        button.classList.add('copied');
-        setTimeout(function () {
-            button.innerHTML = originalText;
-            button.classList.remove('copied');
-        }, 2000);
-    }).catch(async function (err) {
-        console.error('Failed to copy: ', err);
-        await showAlert('Failed to copy to clipboard');
-    });
-}
+// Alias for backwards compatibility
+const copyCommentToClipboard = copyToClipboard;
 
 function editRevision(button) {
     const matecatId = button.getAttribute('data-matecat-id');

@@ -1,24 +1,50 @@
 #!/usr/bin/env python3
 """
-Simple Flask server for job management and file uploads
+CoolerCat Translation Server
+Flask backend for job management, file uploads, and AI revision processing
 """
 import os
+import sys
 import json
 import shutil
-from flask import Flask, request, jsonify, send_from_directory
-from flask_cors import CORS
 import subprocess
 import uuid
 from datetime import datetime
+from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
 
-# Get project root (parent of scripts directory)
+# Paths
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 JOBS_DIR = os.path.join(PROJECT_ROOT, 'jobs')
-# Ensure directories exist
+SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
+
 os.makedirs(JOBS_DIR, exist_ok=True)
+
+
+def run_script(script_name: str, args: list, timeout: int = 300) -> tuple:
+    """Run a Python script and return (success, output/error)"""
+    script_path = os.path.join(SCRIPTS_DIR, script_name)
+    if not os.path.exists(script_path):
+        return False, f"Script not found: {script_path}"
+    
+    try:
+        result = subprocess.run(
+            [sys.executable, script_path] + args,
+            capture_output=True,
+            text=True,
+            cwd=SCRIPTS_DIR,
+            timeout=timeout
+        )
+        if result.returncode != 0:
+            return False, result.stderr or result.stdout or 'Unknown error'
+        return True, result.stdout
+    except subprocess.TimeoutExpired:
+        return False, f'Script timed out after {timeout} seconds'
+    except Exception as e:
+        return False, str(e)
 
 def get_jobs():
     """Get list of all jobs"""
@@ -91,127 +117,48 @@ def create_job():
         return jsonify({'error': str(e)}), 500
 
 def process_job(job_id):
-    """Process a job: generate CSV and HTML"""
-    job_dir = os.path.join(JOBS_DIR, job_id)
+    """Process a job: generate CSV and HTML from XLF file"""
+    import csv as csv_module
     
-    # Find XLF file
+    job_dir = os.path.join(JOBS_DIR, job_id)
     xlf_files = [f for f in os.listdir(job_dir) if f.endswith('.xlf') or f.endswith('.xlf.xlf')]
+    
     if not xlf_files:
         return {'success': False, 'error': 'No XLF file found in job'}
     
-    xlf_file = xlf_files[0]
-    xlf_path = os.path.join(job_dir, xlf_file)
-    
-    # Output paths
+    xlf_path = os.path.join(job_dir, xlf_files[0])
     csv_path = os.path.join(job_dir, 'revision_table.csv')
     html_path = os.path.join(job_dir, 'revision_table.html')
     
-    # Run create_revision_table.py
-    scripts_dir = os.path.dirname(os.path.abspath(__file__))
-    revision_script = os.path.join(scripts_dir, 'create_revision_table.py')
+    print(f"[{job_id}] Processing XLF → CSV...")
     
-    # Check if script exists
-    if not os.path.exists(revision_script):
-        return {'success': False, 'error': f'Script not found: {revision_script}'}
+    # Step 1: Generate CSV from XLF
+    success, output = run_script('create_revision_table.py', [xlf_path, csv_path])
+    if not success:
+        return {'success': False, 'error': f'CSV generation failed: {output}'}
     
+    if not os.path.exists(csv_path):
+        return {'success': False, 'error': 'CSV file was not created'}
+    
+    # Count rows for stats
+    row_count, with_revisions = 0, 0
     try:
-        # Use sys.executable to use the same Python interpreter
-        import sys
-        python_exe = sys.executable
-        
-        print(f"[{job_id}] Starting revision processing...")
-        print(f"[{job_id}] Running: {python_exe} {revision_script} {xlf_path} {csv_path}")
-        
-        result = subprocess.run(
-            [python_exe, revision_script, xlf_path, csv_path],
-            capture_output=True,
-            text=True,
-            cwd=scripts_dir,
-            timeout=300  # 5 minute timeout
-        )
-        
-        # Log output for debugging
-        if result.stdout:
-            print(f"[{job_id}] Script output:\n{result.stdout}")
-        if result.stderr:
-            print(f"[{job_id}] Script errors:\n{result.stderr}")
-        
-        if result.returncode != 0:
-            error_msg = result.stderr or result.stdout or 'Unknown error'
-            print(f"[{job_id}] ERROR: CSV generation failed: {error_msg}")
-            return {'success': False, 'error': f'CSV generation failed: {error_msg}'}
-        
-        # Check if CSV was created
-        if not os.path.exists(csv_path):
-            print(f"[{job_id}] ERROR: CSV file was not created at {csv_path}")
-            return {'success': False, 'error': 'CSV file was not created'}
-        
-        # Verify CSV has content
-        import csv as csv_module
-        row_count = 0
-        with_revisions_count = 0
-        try:
-            with open(csv_path, 'r', encoding='utf-8') as f:
-                reader = csv_module.DictReader(f)
-                for row in reader:
-                    row_count += 1
-                    if row.get('New target', '').strip():
-                        with_revisions_count += 1
-        except Exception as e:
-            print(f"[{job_id}] WARNING: Could not verify CSV content: {e}")
-        
-        print(f"[{job_id}] CSV created: {row_count} rows, {with_revisions_count} with revisions")
-        
-        # Parse stats from output
-        stats = {}
-        for line in result.stdout.split('\n'):
-            if 'Total translations:' in line:
-                try:
-                    stats['total'] = int(line.split(':')[-1].strip())
-                except:
-                    pass
-            elif 'With revisions:' in line:
-                try:
-                    stats['with_revisions'] = int(line.split(':')[-1].strip())
-                except:
-                    pass
-            elif 'With error codes:' in line:
-                try:
-                    stats['with_codes'] = int(line.split(':')[-1].strip())
-                except:
-                    pass
-        
-        # Use actual counts if parsing failed
-        if not stats.get('total'):
-            stats['total'] = row_count
-        if not stats.get('with_revisions'):
-            stats['with_revisions'] = with_revisions_count
-        
-        # Run create_html_table.py
-        html_script = os.path.join(scripts_dir, 'create_html_table.py')
-        if not os.path.exists(html_script):
-            return {'success': False, 'error': f'HTML script not found: {html_script}'}
-        
-        result = subprocess.run(
-            [python_exe, html_script, csv_path, html_path, job_id],
-            capture_output=True,
-            text=True,
-            cwd=scripts_dir,
-            timeout=300  # 5 minute timeout
-        )
-        
-        if result.returncode != 0:
-            error_msg = result.stderr or result.stdout or 'Unknown error'
-            return {'success': False, 'error': f'HTML generation failed: {error_msg}'}
-        
-        return {'success': True, 'stats': stats}
-        
-    except subprocess.TimeoutExpired:
-        return {'success': False, 'error': 'Processing timed out after 5 minutes'}
-    except FileNotFoundError as e:
-        return {'success': False, 'error': f'Python or script not found: {str(e)}'}
+        with open(csv_path, 'r', encoding='utf-8') as f:
+            for row in csv_module.DictReader(f):
+                row_count += 1
+                if row.get('New target', '').strip():
+                    with_revisions += 1
     except Exception as e:
-        return {'success': False, 'error': f'Processing error: {str(e)}'}
+        print(f"[{job_id}] Warning: Could not count rows: {e}")
+    
+    print(f"[{job_id}] CSV: {row_count} rows, {with_revisions} with revisions")
+    
+    # Step 2: Generate HTML from CSV
+    success, output = run_script('create_html_table.py', [csv_path, html_path, job_id])
+    if not success:
+        return {'success': False, 'error': f'HTML generation failed: {output}'}
+    
+    return {'success': True, 'stats': {'total': row_count, 'with_revisions': with_revisions}}
 
 @app.route('/api/jobs/<job_id>/process', methods=['POST'])
 def reprocess_job(job_id):
@@ -227,79 +174,36 @@ def reprocess_job(job_id):
 
 @app.route('/api/jobs/<job_id>/revise', methods=['POST'])
 def revise_job(job_id):
-    """AI-powered revision of all translations in a job using built-in AI"""
+    """AI-powered revision of all translations in a job"""
     job_dir = os.path.join(JOBS_DIR, job_id)
     csv_path = os.path.join(job_dir, 'revision_table.csv')
+    html_path = os.path.join(job_dir, 'revision_table.html')
     
     if not os.path.exists(csv_path):
         return jsonify({'error': 'CSV file not found. Please process the job first.'}), 404
     
-    try:
-        import sys
-        python_exe = sys.executable
-        scripts_dir = os.path.dirname(os.path.abspath(__file__))
-        ai_revision_script = os.path.join(scripts_dir, 'ai_revision.py')
-        
-        if not os.path.exists(ai_revision_script):
-            return jsonify({'error': 'AI revision script not found'}), 500
-        
-        print(f"[{job_id}] Starting AI revision using built-in knowledge...")
-        print(f"[{job_id}] Running: {python_exe} {ai_revision_script} {csv_path} {csv_path}")
-        
-        # Run AI revision script (no API key needed - uses built-in AI)
-        result = subprocess.run(
-            [python_exe, ai_revision_script, csv_path, csv_path],
-            capture_output=True,
-            text=True,
-            cwd=scripts_dir,
-            timeout=1800  # 30 minute timeout for AI processing
-        )
-        
-        if result.stdout:
-            print(f"[{job_id}] AI revision output:\n{result.stdout}")
-        if result.stderr:
-            print(f"[{job_id}] AI revision errors:\n{result.stderr}")
-        
-        if result.returncode != 0:
-            error_msg = result.stderr or result.stdout or 'Unknown error'
-            return jsonify({'error': f'AI revision failed: {error_msg}'}), 500
-        
-        # Parse stats from output
-        stats = {}
-        for line in result.stdout.split('\n'):
-            if 'Total segments:' in line:
-                try:
-                    stats['total'] = int(line.split(':')[-1].strip())
-                except:
-                    pass
-            elif 'Revised:' in line:
-                try:
-                    stats['revised'] = int(line.split(':')[-1].strip())
-                except:
-                    pass
-        
-        # Regenerate HTML table with updated CSV
-        html_path = os.path.join(job_dir, 'revision_table.html')
-        html_script = os.path.join(scripts_dir, 'create_html_table.py')
-        if os.path.exists(html_script):
-            subprocess.run(
-                [python_exe, html_script, csv_path, html_path, job_id],
-                capture_output=True,
-                text=True,
-                cwd=scripts_dir,
-                timeout=300
-            )
-        
-        return jsonify({
-            'message': 'AI revision completed successfully',
-            'stats': stats
-        })
-        
-    except subprocess.TimeoutExpired:
-        return jsonify({'error': 'AI revision timed out after 30 minutes'}), 500
-    except Exception as e:
-        print(f"[{job_id}] AI revision error: {str(e)}")
-        return jsonify({'error': f'AI revision error: {str(e)}'}), 500
+    print(f"[{job_id}] Starting AI revision...")
+    
+    # Run AI revision (30 min timeout for large jobs)
+    success, output = run_script('ai_revision.py', [csv_path, csv_path], timeout=1800)
+    if not success:
+        return jsonify({'error': f'AI revision failed: {output}'}), 500
+    
+    # Parse stats from output
+    stats = {}
+    for line in output.split('\n'):
+        if 'Total segments:' in line:
+            try: stats['total'] = int(line.split(':')[-1].strip())
+            except: pass
+        elif 'Revised:' in line:
+            try: stats['revised'] = int(line.split(':')[-1].strip())
+            except: pass
+    
+    # Regenerate HTML with AI results
+    run_script('create_html_table.py', [csv_path, html_path, job_id])
+    
+    print(f"[{job_id}] AI revision complete: {stats.get('revised', 0)} revised")
+    return jsonify({'message': 'AI revision completed successfully', 'stats': stats})
 
 @app.route('/api/jobs/<job_id>/progress', methods=['GET'])
 def get_job_progress(job_id):

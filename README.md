@@ -55,31 +55,32 @@ CoolerCat is designed to solve the challenge of reviewing large volumes of Frenc
 
 ```
 Notion-Translate/
-├── assets/                    # Optimized WebP images and static files
-│   ├── coolcat.webp          # Favicon
-│   ├── proudcat.webp         # Success states
-│   ├── sadcat.webp           # Error states
-│   └── surprisedcat.webp     # Confirmation dialogs
+├── assets/                    # Frontend assets
+│   ├── css/style.css         # Notion-inspired styling
+│   ├── js/app.js             # Main application logic
+│   └── *.webp                # Optimized images (coolcat, proudcat, etc.)
 │
-├── docs/                      # Documentation and reference materials
-│   └── [SHARED WITH LINGUISTS] Quality Framework - Notion - Main.pdf
+├── docs/                      # Documentation and resources
+│   ├── resources/            # Style guides, glossaries, learning journals (PDFs/CSVs)
+│   ├── knowledge_base_resources.md  # Documentation of integrated resources
+│   └── style_guide_french.md        # Extracted French style guide
 │
 ├── jobs/                      # Job storage (auto-created)
-│   └── <job-id>/             # Each job has its own folder
+│   └── <job-id>/             # Each job folder
 │       ├── *.xlf             # Original XLF source file
-│       ├── revision_table.csv    # Processed data (CSV format)
-│       └── revision_table.html   # Generated HTML (legacy, not used)
+│       ├── revision_table.csv    # Processed data
+│       └── progress.json     # AI revision progress tracking
 │
-├── scripts/                   # Python backend scripts
-│   ├── server.py             # Flask web server and API
-│   ├── create_revision_table.py  # XLF parsing and XLF revision extraction
-│   ├── ai_revision.py        # AI-powered revision engine
-│   └── create_html_table.py  # HTML table generator (legacy)
+├── scripts/                   # Python backend
+│   ├── server.py             # Flask API server
+│   ├── create_revision_table.py  # XLF parsing
+│   ├── ai_revision.py        # AI-powered revision (Gemini)
+│   └── create_html_table.py  # HTML generator (legacy)
 │
-├── index.html                 # Main web interface (single-page application)
+├── knowledge_base.txt         # AI knowledge base (style guide, glossary, rules)
+├── index.html                 # Main web interface (SPA)
 ├── requirements.txt           # Python dependencies
-├── README.md                  # This file
-└── QUICKSTART.md              # Quick start guide
+└── README.md                  # This file
 ```
 
 ## 🚀 Installation

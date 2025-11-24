@@ -1,0 +1,165 @@
+﻿Name,Notes,Terme français
+workflow,« étapes » en surface simple; « flux de travail » si notion de processus.,étapes / flux de travail
+assignee,Propriété/attribution d’une tâche.,Responsable
+linked view,Notion — vue d’une base liée ailleurs.,vue liée
+onboarding,Parcours d’accueil des utilisateurs.,intégration
+dashboard,Libellé produit standard.,Tableau de bord
+support,"Terme générique. Pour l’équipe, utiliser « équipe du service client ». ",service client
+search,Verbe d’action en UI. Préférer « chercher » à « rechercher » sauf nécessité stylistique ou nom (« recherche »).,chercher
+support team,"Pour référer au groupe de personnes. ",équipe du service client
+support (feature),Contexte fonctionnel/technique: une fonctionnalité prend en charge X.,prendre en charge
+eligible,"Bannières et critères d’offre. Éviter « éligible ». ",admissible
+seat,,place
+use case,,cas d’utilisation
+AI block,Terme officiel. Avec « d' » élidé.,bloc d'IA
+"Ask, search, or make anything...",Formulation typique pour l'interface de recherche/question.,"Poser une question, rechercher ou créer quelque chose…"
+upload,Privilégier « charger » plutôt qu'« importer » dans les contextes d'interface web.,charger
+agent,"Garder le terme anglais, comme dans le contexte Notion (Notion AI agents).",agent
+cover,"Image de couverture d'agent, page, etc. (pas juste « couverture »).",image de couverture
+action bar,Interface avec boutons d'action groupés.,barre d'actions
+run,Dans le contexte des agents/workflows : une utilisation/exécution de l'agent.,exécution
+slider icon,Icône UI représentant des curseurs (réglages). À préférer à « icône en forme de curseurs ». Utiliser pour les options de panneau ou paramètres.,icône du curseur
+event blocking,Contexte calendrier. Action/paramètre pour empêcher la création ou le chevauchement d’événements.,blocage d’événement
+Allow members to invite guests to pages,Libellé officiel du paramètre (UI FR). Contexte: Paramètres espace de travail → Membres et invités.,Autoriser les membres à inviter des personnes sur les pages
+hc:,Marqueur en tête de message pour indiquer « help center ». À lire comme « aide : ». À utiliser dans les demandes de segments liés au centre d’aide.,aide :
+prompt,"Dans le contexte IA, désigne les instructions données au modèle.",instruction
+Web,Toujours avec majuscule. Le réseau mondial.,Web
+ownership,"Contexte e-mail alias : « confirmer la propriété » pour ""confirm ownership"".",propriété
+Slider menu,Menu latéral qui se déploie. Confirmé par les TMs.,menu déroulant
+Pin / Marker,Repère envisagé pour alignement Google Maps (à discuter).,épingle
+Map by,Paramètre officiel de la vue Carte.,Organiser par
+Location services,Services système pour obtenir la position géographique.,services de localisation
+Page background color,Propriété de mise en forme de page.,couleur d'arrière-plan de page
+Place property,Avec majuscule. Nouvelle propriété pour la vue Carte.,propriété Lieu
+Enterprise Plan,Conserver en anglais.,forfait Enterprise
+Current location,Préférer à « emplacement actuel ».,position actuelle
+Map view,Vue de base de données affichant les lieux sur une carte interactive.,vue Carte
+Status (property type),Type de propriété. À ne pas confondre avec « statut » (terme général).,État
+collapse,Pour les sections UI. Opposé de agrandir.,réduire
+expand,Pour les sections UI. Ne pas utiliser « développer ».,agrandir
+Upcoming meeting notification,Terme officiel pour ce type de notification dans Notion Calendar.,Notifications de prochaine réunion
+panel,context panel = panneau contextuel. Ne pas confondre avec volet.,panneau
+add-on,UI et facturation. Ex.: acheter le module complémentaire.,module complémentaire
+Statement of Work,"Préférer « complet » à « entier » en UI. Contexte: contrats, projets.",cahier des charges
+Consulting,Catégorie éditoriale ou secteur. Variantes: services de conseil.,Conseil
+DLP (Data Loss Prevention),Acronyme technique conservé en anglais.,DLP
+Redact (content),"Dans le contexte de masquer du contenu sensible. Alternatives : « occulter », « caviarder » (masquer reste le plus courant en UI).",masquer
+Remediate,« Remédier à » (avec préposition) dans contexte technique/sécurité.,remédier à
+Date range,Confirmé par Audrey. Préférer à « plage de dates » ou « période ».,intervalle de temps
+Event log,Contexte audit/sécurité.,journal d'événements
+Audit log,Contexte sécurité/conformité.,journal d'audit
+Data breach,Contexte sécurité. Alternative possible : « fuite de données ».,violation de données
+created by (property),Propriété système de base de données. Ne pas traduire comme « propriété Créée par » (accord masculin car « propriété » est sous-entendu comme « type de propriété »).,Créé par
+person property,Type de propriété de base de données.,propriété de type Personne / propriété Personne
+full-page database,Confirmé par Audrey. Opposé de « base de données intégrée ».,base de données pleine page
+tagged (in a property),Dans le contexte de personnes identifiées/assignées dans une propriété. Éviter « étiqueté » (trop littéral).,mentionné
+inline database,"Base de données affichée directement dans une page, opposé de « pleine page ».",base de données intégrée
+workspace analytics,« Analyse » au singulier quand il s'agit de la fonctionnalité/outil. « Données analytiques » quand on parle spécifiquement des données.,analyse de l'espace de travail / données analytiques de l'espace de travail
+Inbox,Fonctionnalité Notion. Terme officiel confirmé par Audrey.,Boîte de réception
+leave Notion,Contexte de départ/fermeture de compte. Rester simple et direct.,quitter Notion
+fill cells (right/down),Action dans les tableaux. Utiliser 'vers la' pour la direction.,remplir les cellules (vers la droite/vers le bas)
+Board view,Type de vue de base de données. Peut être abrégé en « Tableau » ou « Kanban » selon le contexte.,vue Tableau Kanban
+badge,Élément UI de notification (ex: pastille rouge à côté de Boîte de réception).,pastille
+list database / list view,Type de vue de base de données minimaliste.,base de données Liste / vue Liste
+Tips (singular),Pour une astuce unique dans l'UI. Utiliser le singulier en français même si l'anglais utilise 'Tips'.,Conseil
+view (action UI),Pour les actions de visualisation dans l'interface. Préférer « afficher » à « consulter ».,afficher
+import logs,Préférer le terme complet « importation » à l'abréviation « import ».,journaux d'importation
+task database,Structure : base de données + de + type. Ex. : base de données de tâches privée.,base de données de tâches
+Lead,Client potentiel dans le contexte commercial,prospect
+Bandwidth (RH),"En contexte ressources humaines, pas technique/réseau",capacité / disponibilité
+Consultancy,"Cabinet/société, pas un consultant individuel",cabinet de conseil
+Sales Partner,Type de partenaire qui gère la revente et le cycle de vie complet,Partenaire commercial
+Marketplace,"Conserver l'article défini ""la"" pour cohérence avec les TMs",la Marketplace
+Track record,"Selon contexte : historique, antécédents, expérience avérée",historique / expérience démontrée
+Notion AI,Forme française à utiliser dans les traductions FR,IA de Notion
+Change management,"Contexte organisationnel. Ne pas confondre avec ""gestion des modifications"" (technique).",gestion du changement
+Deal,Dans le contexte CRM/ventes. Cohérent avec la terminologie Salesforce.,opportunité
+Delivery team,Contexte consulting. Alternative : équipe projet,équipe de prestation
+Enterprise Search,"Sans article, avec majuscules. Terme établi dans le glossaire.",Recherche Enterprise
+Consulting Partner,Statut officiel du programme de partenariat. Avec majuscules.,Partenaire consultant
+Statement of Work (SOW),Document de cadrage projet dans le contexte consulting,cahier des charges
+Personal Agent,"Nom du produit Notion. Ne pas traduire dans le nom complet « Notion Personal Agent », mais traduire dans les contextes génériques.",agent personnel
+teammate,Contexte général. Variante selon contexte : « coéquipier » (plus concis pour UI).,membre de votre équipe
+feedback,Contexte produit. Retour utilisateur sur une fonctionnalité ou interaction.,commentaire
+thumbs down,Icône de feedback négatif dans l'interface.,pouce baissé
+thumbs up,Icône de feedback positif dans l'interface.,pouce levé
+List view,Type de vue dans les bases de données. Attention à la majuscule à Liste.,vue Liste
+Meeting Notes,Notes de réunion génériques (sans IA). Distinct de AI Meeting Notes (Notes d'IA).,Notes de réunion
+AI Meeting Notes,Fonctionnalité spécifique de Notion. À ne pas confondre avec Meeting Notes (Notes de réunion).,Notes d'IA
+Notion New Tab extension,Nom de produit. Structure: Type + Marque + Nom spécifique.,Extension Notion Nouvel onglet
+Dragging,"Les TMs Notion utilisent 'faire glisser' ou 'faisant glisser', pas 'glissement'. Cohérence terminologique importante.",Faire glisser
+Do (automation header),"En-tête de section dans le modal d'automatisation Notion. Structure : Quand / Faire. Utilisé comme titre de section, pas comme verbe d'action.",Faire
+Monthly (billing interval),Adverbe requis dans le contexte 'facturée {interval}'. Utiliser 'mensuellement' (pas 'mensuelle' qui est un adjectif).,mensuellement
+Teamspace directory,Les TMs Notion utilisent systématiquement 'Annuaire' (pas 'Répertoire') pour 'directory' dans ce contexte UI.,Annuaire de l'espace d'équipe
+AI model names,"Les noms de modèles d'IA (ex: 'Orange Tart Minimal Thinking', 'GPT-4', 'Claude') sont des noms propres techniques et doivent rester en anglais dans toutes les locales.",(conserver en anglais)
+When (automation header),En-tête de section dans le modal d'automatisation Notion. Structure : Quand / Faire.,Quand
+Submit screen,Écran de confirmation affiché APRÈS la soumission d'un formulaire. Ne pas traduire par 'Envoyer l'écran' (qui serait l'action d'envoyer).,Écran de soumission
+Account (Salesforce),Objet Salesforce. Salesforce a une interface française qui utilise 'Compte' pour 'Account'.,Compte
+Trust Portal,Contexte : Conveyor Trust Portal = portail Trust de Conveyor,portail Trust
+Rollup (property type),Type de propriété Notion. Ne pas confondre avec 'cumul' ou 'récapitulatif'.,agrégation
+FAQ,Toujours au pluriel.,questions fréquentes
+Rollups,Type de propriété qui agrège/cumule des données à partir de relations. Contexte: propriétés de base de données.,agrégations
+Notion Sites,Nom de produit Notion. Toujours conserver en anglais. Ajouter espace insécable entre les deux mots (Notion°Sites).,Notion Sites (ne pas traduire)
+created by (page),Quand on parle de la page (accord féminin). Distinct de « created by (property) » qui est « Créé par » (masculin).,Créée par
+database page-level access,Variante spécifique pour les bases de données.,Accès à la page de base de données
+page-level access,Terme UI. Confirmé par les TMs.,Accès à la page
+@remind,Commande Notion pour définir des rappels. Toujours conserver en minuscules avec @.,@rappel
+toggle,Élément d'interface Notion. Bloc qui peut être déplié/replié pour afficher ou masquer du contenu.,menu dépliant
+Notion Agent (capitalisation),"À SUIVRE : Vérifier la capitalisation officielle en français. Deux usages possibles : 1) ""Notion Agent"" (majuscules, nom de produit marketing) 2) ""l'agent Notion"" / ""votre agent"" (minuscules, usage générique). Besoin de confirmation officielle pour le contexte de présentation du produit.",À suivre
+Essentials (learning path),"Nom de parcours de formation Notion. Toujours traduire (contrairement aux noms de produits ou de forfaits). Utiliser ""Bases"" sans article dans le nom du parcours.",Bases
+/meet,Commande Notion pour insérer un bloc Notes d'IA (AI Meeting Notes). Traduire en français.,/notes
+/button,Commande Notion pour insérer un bouton. Traduire en français.,/bouton
+actionable,Qualifie des documents/informations qui peuvent être utilisés pour agir. Pas 'actionnable'.,exploitable
+remote collaboration,Préférer 'travail à distance' à 'collaboration à distance' (moins corporate). Dans certains contextes : 'travailler ensemble à distance'.,travail à distance
+wiki,Terme invariable. Les wikis (pluriel). Fonctionnalité spécifique Notion.,wiki
+playbook (sales),Contexte vente. Document stratégique pour équipes commerciales.,guide commercial
+suggested edits,Fonctionnalité Notion permettant de proposer des changements sans éditer directement.,modifications suggérées
+feedback (user),Contexte produit/utilisateur. Retour utilisateur sur fonctionnalité. Éviter 'retours d'utilisateurs' (lourd). Déjà dans glossaire mais ajout note contexte.,commentaire
+learning path,"Terme générique. Les noms de parcours spécifiques (Essentials, etc.) se traduisent contrairement aux noms de forfaits.",parcours de formation
+overhead (workload),Dans contexte charge administrative/organisationnelle. Pas 'frais généraux' (qui est financier).,charge de travail
+talk tracks,Contexte vente. Peut aussi être 'éléments de langage' selon contexte.,arguments de vente
+knowledge base,Référentiel centralisé d'informations. Pas 'base de savoir'.,base de connaissances
+kick-off document,Document initial d'un projet. Peut aussi être 'document de démarrage'.,document de lancement
+building blocks,Terme clé Notion. Singulier en français même si source au pluriel. Contexte : fonctionnalités de base,bloc de contenu
+prompt (AI context),"Dans contexte IA, désigne instructions données au modèle",instruction
+sidebar,Élément d'interface Notion principal pour la navigation,barre latérale
+board (database view),"Type de vue de base de données. Forme complète : vue Tableau Kanban. À ne pas confondre avec ""table"" (table)",Tableau / Tableau Kanban
+teamspace,Sous-espace collaboratif dans un workspace Notion,espace d'équipe
+subpage,Page enfant d'une autre page dans la hiérarchie,sous-page
+table (database view),"Type de vue de base de données. À ne pas confondre avec ""board"" (Tableau)",table
+workspace,Espace collaboratif principal dans Notion,espace de travail
+hub,Éviter l'anglicisme. Ex: Project Hub → Centre de projets,centre
+embeds,"Fonctionnalité permettant d'afficher du contenu externe dans Notion. Distinct de ""integrations"" (connexions API)",intégrations (de contenu) / contenus embarqués
+self-serve (culture/documentation),Dans le contexte de documentation d'entreprise. Pas 'libre-service' (connotation commerciale). Ex: 'self-serve documentation culture' = 'culture de documentation autonome'.,autonome
+backlinks,Liens automatiques créés par les @-mentions. Affichent toutes les pages qui pointent vers la page actuelle.,liens entrants
+owned (documents/content),Dans le contexte de gouvernance documentaire. 'Docs are owned' = 'les documents ont un responsable' (pas 'appartiennent à quelqu'un').,avoir un responsable
+executive engagement,Implication active des cadres dirigeants dans une initiative.,engagement des dirigeants
+content governance,"Processus pour assurer que la documentation est exacte, à jour et a un responsable identifié.",gouvernance du contenu
+link previews,"Aperçus visuels en direct des liens externes (Jira, GitHub, Slack, etc.) affichés dans Notion.",aperçus de liens
+muscle memory,"Habitude ancrée, automatisme. Ex: 'daily muscle memory' = 'mémoire musculaire quotidienne'.",mémoire musculaire
+employee buy-in,"Engagement et acceptation par les employés d'une initiative ou culture. 'Buy-in' = adhésion, pas 'participation'.",adhésion des employés
+Feed view,Type de vue de base de données. Affichage en cartes empilées linéaires comme un blog ou réseau social. Majuscule à 'Fil' comme pour les autres types de vues.,vue Fil d'actualité
+blocker (general context),Obstacle courant qui empêche progression. Contexte général (pas technique/dev). Ex: 'common blockers' = 'obstacles courants'.,obstacle
+owner (content/governance context),"Dans le contexte de gouvernance de contenu. 'Content owner' = 'personne responsable du contenu'. Jamais 'propriétaire'. La personne qui assure la qualité, l'exactitude et la mise à jour.",personne responsable
+"Type (verb, UI instruction)",Verbe d'instruction UI pour saisir du texte. Impératif : Saisissez (pas Tapez). Ex : 'Type @ to tag' → 'Saisissez @ pour identifier'. Cohérence avec 'Enter → Saisissez'.,Saisissez
+due date,Date limite pour la complétion d'une tâche ou d'un projet.,date d'échéance
+department (organizational unit),"Dans le contexte organisationnel Notion, préférer 'équipe' à 'service' pour éviter l'ambiguïté avec les services/produits commerciaux (ex: 'service client' = support).",équipe
+sandbox (testing environment),Environnement de test isolé pour expérimenter sans risque avant le déploiement en production.,bac à sable
+display and structure,"Catégorie de format dans architecture workspace. L'ossature/scaffolding qui donne contexte à l'espace de travail. Exemples: landing pages, pages d'accueil.",affichage et structure
+contributor (content),Personne qui contribue au contenu. Distinct de 'owner' (personne responsable). Pluriel: contributeurs.,contributeur
+shelf life,Longévité du contenu avant mise à jour nécessaire. Contexte: critères pour choisir format (wiki/database/page).,durée de vie
+records of knowledge,"Dans le contexte d'architecture d'espace de travail. Documents statiques comme politiques, guides. Distinct de 'knowledge base' (base de connaissances). Pas 'enregistrements de connaissances' (trop littéral).",ressources de connaissances
+landing page,Page d'entrée qui donne contexte. Contexte: display and structure dans architecture workspace.,page d'accueil
+business process,Workflows qui pilotent l'entreprise. Contexte organisationnel/architecture workspace.,processus métier
+tool sprawl,,prolifération des outils
+post-mortems,Contexte technique/IT,analyses post-incident
+Lesson Overview,Terme officiel glossaire Notion pour cours,Aperçu de la leçon
+time to value,Dans contexte consulting Notion. Pas 'délai de rentabilité',création de valeur
+sales discovery,Contexte business/consulting,phase de découverte commerciale
+Knowledge Check,Terme officiel glossaire Notion pour quiz,Test de connaissances
+implementation,"Anglicisme à éviter. Alternatives : mise en œuvre, déploiement",mise en œuvre
+guest access,Avec point médian pour inclusivité. Singulier : un·e invité·e,accès des invité·es
+Issue tracker,Template Marketplace. Ne pas traduire par 'suivi des tâches'. Nom officiel du template: 'Suivi des tickets'.,suivi des tickets
+Worker tool,"Module technique dans les workflows d'automatisation. Ne pas traduire par ""Travailleur"" - rester technique.",worker tool (terme technique)
+Move to chat,"Action de déplacement de contenu vers le chat IA. Cohérent avec ""Add to chat"" → ""Ajouter à la discussion par chat"".",Déplacer dans la discussion par chat
+Mapping file,"Fichier définissant les correspondances entre structures de données lors d'imports. Ne pas traduire par ""mappage"" (anglicisme).",fichier de correspondance

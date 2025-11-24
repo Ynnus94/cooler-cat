@@ -29,6 +29,12 @@ jobs/*/*.csv
 # Local storage
 *.local
 
+# Temp files from PDF extraction and testing
+temp_*.txt
+*_extracted.txt
+*_content.txt
+test_*.csv
+full_style_guide.txt
+
 # Job files (optional - uncomment if you don't want to track job data)
 # jobs/
-
